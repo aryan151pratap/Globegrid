@@ -1,7 +1,7 @@
 import asyncio
-from http.client import HTTPException
 import uuid
 
+from fastapi import HTTPException
 from langchain.tools import tool
 from services.manager.device_manager import manager
 from services.manager.agent_device_transport import agent_device_transport
@@ -21,9 +21,9 @@ def _new_request_id() -> str:
 	return uuid.uuid4().hex
 
 
-def _base_payload(operation: str, path: str, request_type: str = "http", **extra) -> dict:
+def _base_payload(operation: str, path: str, request_type: str = "http", msg_type: str = "filesystem", **extra) -> dict:
 	payload = {
-		"type": "filesystem",
+		"type": msg_type,
 		"request_id": _new_request_id(),
 		"request_type": request_type,
 		"operation": operation,
@@ -34,7 +34,6 @@ def _base_payload(operation: str, path: str, request_type: str = "http", **extra
 
 
 async def _send_and_wait(device_id: str, payload: dict, timeout: float = None):
-	print(payload)
 	websocket = manager.get_websocket(device_id)
 	if websocket is None:
 		raise HTTPException(status_code=404, detail="device is not connected")
@@ -99,7 +98,19 @@ def build_device_tools(device_id: str | None):
 
 	if not device_id:
 		return []
-	
+
+	@tool
+	async def execute_file(path: str):
+		"""Boot/execute a file on the IoT device at the given path."""
+		payload = _base_payload("boot", path, data=f"boot {path}", msg_type="command")
+		return await _send_and_wait(device_id, payload)
+
+	@tool
+	async def execute_file_terminal(path: str):
+		"""Run a file on the IoT device via the terminal `run()` command."""
+		payload = _base_payload("run", path, data=f"run('{path}')", msg_type="command")
+		return await _send_and_wait(device_id, payload)
+
 	@tool
 	async def list_folder(path: str = "/") -> list:
 		"""List files and folders on the IoT device at the given path."""
@@ -139,4 +150,4 @@ def build_device_tools(device_id: str | None):
 		payload = _base_payload("delete", path, entry_type=entry_type)
 		return await _send_and_wait(device_id, payload)
 
-	return [list_folder, read_file, write_file, create_entry, delete_entry]
+	return [execute_file, execute_file_terminal, list_folder, read_file, write_file, create_entry, delete_entry,]

@@ -1,18 +1,34 @@
 import { useEffect, useState } from "react";
-import { CiFileOn, CiMenuBurger } from "react-icons/ci";
+import { CiMenuBurger } from "react-icons/ci";
 import { FiRefreshCcw, FiTerminal } from "react-icons/fi";
-import { VscClose, VscFileCode, VscPython } from "react-icons/vsc";
+import { VscClose } from "react-icons/vsc";
+import { getFileIcon } from "./fileIcons";
 
 const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, setActiveFile, setOpenTerminal, handleReconnect}) {
-	
+
 	const [activesFiles, setActivesFiles] = useState([]);
+
 	useEffect(() => {
 		if(!activeFile) return;
-		const findFile = activesFiles.some((i, index) => i.name === activeFile.name);
-		if(!findFile){
-			setActivesFiles((e) => [...e, activeFile]);
-		}
+		setActivesFiles((prev) => {
+			const exists = prev.some((i) => i.name === activeFile.name);
+			if(!exists) return [...prev, activeFile];
+			return prev.map((i) =>
+				i.name === activeFile.name ? { ...i, ...activeFile } : i
+			);
+		});
 	}, [activeFile])
+
+	const handleCloseTab = (e, file) => {
+		e.stopPropagation();
+		setActivesFiles((prev) => {
+			const remaining = prev.filter((i) => i.name !== file.name);
+			if (activeFile?.name === file.name) {
+				setActiveFile(remaining.length ? remaining[remaining.length - 1] : null);
+			}
+			return remaining;
+		});
+	};
 
 	return (
 		<div className="w-full flex h-10 items-center border-b border-zinc-800 bg-[#0d0d0f]">
@@ -26,23 +42,24 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 				</button>
 			)}
 			<div className="w-full flex flex-row h-full items-center">
+				{activesFiles.length > 0 &&
 				<div className="h-full items-center flex flex-row text-white text-sm text-zinc-200 overflow-auto hide-scrollbar">
 					{activesFiles.map((i, index) => (
-						<div key={index} className={`h-full items-center flex gap-2 px-2 cursor-pointer ${activeFile?.name == i.name ? "bg-orange-400/10 border-t-2 border-orange-500" : "hover:bg-zinc-400/10 border-r border-zinc-800 text-zinc-400 hover:text-white"}`}
+						<div key={index} className={`h-full items-center flex gap-2 px-2 cursor-pointer ${activeFile?.name == i.name ? "bg-zinc-800/50" : "hover:bg-zinc-400/20 border-r border-zinc-800 text-zinc-400 hover:text-white"}`}
 							onClick={() => setActiveFile(i)}
 						>
-							{i?.name?.split(".")[1] == "py" ?
-								<VscPython className="text-blue-500 h-4 w-4"/>
-								:
-								<VscFileCode className="text-orange-500 h-4 w-4"/>
-							}
+							{getFileIcon(i?.name, 16)}
 							{i?.name}
-							<button className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1">
+							<button
+								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"
+								onClick={(e) => handleCloseTab(e, i)}
+							>
 								<VscClose/>
 							</button>
 						</div>
 					))}
 				</div>
+				}
 				<div className="h-full border-l border-zinc-500/20 p-1.5 ml-auto flex flex-row gap-2">
 					<button 
 						className="flex flex-row items-center gap-2 text-zinc-400 bg-zinc-500/20 text-xs px-2 p-1 hover:bg-purple-500/70 hover:text-white capitalize"

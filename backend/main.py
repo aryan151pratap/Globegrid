@@ -9,6 +9,7 @@ from routers.agent_ws import router as agent_ws_router
 from routers.httpRoute.userRoute import router as user_router
 from routers.httpRoute.deviceRoute import router as device_router
 from routers.httpRoute.agentRoute import router as agent_router
+from routers.httpRoute.codeRoute import router as code_router
 
 
 app = FastAPI()
@@ -32,3 +33,4 @@ app.include_router(agent_ws_router)
 app.include_router(user_router)
 app.include_router(device_router)
 app.include_router(agent_router)
+app.include_router(code_router)

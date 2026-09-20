@@ -50,7 +50,7 @@ const Dashboard = () => {
                 <div className="h-full w-0.5 rounded-md group-hover:bg-orange-500/70" />
             </div>
 
-            <div
+            {/* <div
                 className="h-full flex flex-col rounded-md"
                 style={{ width: `${agentWidth}px` }}
             >
@@ -60,7 +60,7 @@ const Dashboard = () => {
                 </div>
                 <div className="h-2 bg-[#0d0d0f]"></div>
             </div>
-            <div className="w-2 h-full bg-[#0d0d0f]"></div>
+            <div className="w-2 h-full bg-[#0d0d0f]"></div> */}
         </div>
     );
 };

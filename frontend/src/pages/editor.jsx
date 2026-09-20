@@ -10,17 +10,26 @@ import { useNotify } from "../components/Device-IDE/notify.jsx";
 import WriteFile from "../components/Device-IDE/writefile.jsx";
 import EmptyEditor from "../components/Device-IDE/emptyEditor.jsx";
 import { handleMouseDownHeight } from "../services/silde.js";
+import { initFileChangeTrigger } from "../services/fileChangeStore.js";
 
-const lang = {py: "python", txt: "text", css: "css", html: "html", java: "java", js: "javascript"};
+
+const lang = { js:"javascript",jsx:"javascript",ts:"typescript",tsx:"typescript",py:"python",java:"java",c:"c",cpp:"cpp",cs:"csharp",go:"go",rs:"rust",php:"php",rb:"ruby",html:"html",css:"css",scss:"scss",json:"json",xml:"xml",yaml:"yaml",yml:"yaml",md:"markdown",txt:"plaintext",sql:"sql",sh:"shell",bash:"shell",ps1:"powershell",dockerfile:"dockerfile",ini:"ini" };
 const Editor = function ({user}) {
+
+	// iot device ecxplorer
 	const [files, setFiles] = useState([]);
-	const [activeFile, setActiveFile] = useState(null);
 	const [fileData, setFileData] = useState([]);
+
+	// ui code explorer
+	const [codeFiles, setCodeFiles] = useState([]);
+	const [codeFileData, setCodeFileData] = useState([]);
+	const [activeProject, setActiveProject] = useState(null);
+
+	const [activeFile, setActiveFile] = useState(null);
 
 	const [terminal, setTerminal] = useState([]);
 	const [openExplorer, setOpenExplorer] = useState(true);
 	const [openTerminal, setOpenTerminal] = useState(true);
-	const [currentFolder, setCurrentFolder] = useState("");
 	const [iotConn, setIotConn] = useState({});
 	const [backend, setBackend] = useState(null);
 	const [currentDevice, setCurrentDevice] = useState(null);
@@ -52,6 +61,10 @@ const Editor = function ({user}) {
 		setFileData([]);
 		getIotFiles();
 	}, [currentDevice, iotConn, backend, fileTrigger])
+
+	useEffect(() => {
+		initFileChangeTrigger(setFileTrigger);
+	}, []);
 	
 	useEffect(() => {
 		const fetchESP = async () => {
@@ -93,8 +106,10 @@ const Editor = function ({user}) {
 						if(operation == "list_folder") setFiles(data.data);
 						else if (operation === "read_file") {
 							setFileData((prev) => {
-								const currentFile = prev[data.path];
-								const updatedFile = {...currentFile, content: (currentFile?.content || "") + data.data};
+								const currentFile = prev[data.path] || { content: "", totalLines: 0, currentLine: 0, origin: "device"};
+								const updatedFile = data.total_lines !== undefined
+									? { ...currentFile, content: "", totalLines: data.total_lines, currentLine: 0 }
+									: { ...currentFile, content: currentFile.content + data.data, currentLine: data.count + 1 }
 								setActiveFile(updatedFile);
 								return {...prev, [data.path]: updatedFile};
 							});
@@ -151,7 +166,7 @@ const Editor = function ({user}) {
 	const handleFileSelect = (file) => {
 		try{
 			const data = fileData[file.path];
-			console.log(data);
+			console.log("data", data);
 			if(!data){
 				getIotFiles(file.path, "read_file");
 				notify({type: "status", message: `${file.name} fetching...`});
@@ -161,7 +176,8 @@ const Editor = function ({user}) {
 					path: file.path,
 					type: file.type,
 					content: "",
-					language: lang[file.name.split(".")[1]]
+					language: lang[file.name.split(".")[1]],
+					origin: "device"
 				}
 				setFileData((e) => ({...e, [file.path]: newData}));
 				setActiveFile(newData);
@@ -173,8 +189,25 @@ const Editor = function ({user}) {
 		}
 	};
 
+	const handleCodeFileSelect = (file) => {
+		if(!file) setActiveFile(null);
+		try{
+			const newData = {
+				id: file.path,
+				name: file.name,
+				path: file.path,
+				type: file.type,
+				content: file.content,
+				language: lang[file.name.split(".")[1]],
+				origin: "project"
+			}
+			setActiveFile(newData);
+		} catch (err) {
+			notify({type: "error", message: err.message});
+		}
+	}
+
 	const handleEditorChange = (content) => {
-		console.log(content);
 		setActiveFile((prevFile) => ({...prevFile, content}));
 	};
 
@@ -187,7 +220,6 @@ const Editor = function ({user}) {
 	};
 
 	const LoadFolders = async function(path){
-		console.log(path);
 		try{
 			const folder = await getFolder(currentDevice, path);
 			if(folder.data.length == 0){
@@ -199,6 +231,11 @@ const Editor = function ({user}) {
 			notify({type: 'error', message: err.message});
 		}
 	}
+
+	useEffect(() => {
+		console.log(activeFile);
+	}, [activeFile])
+
 	return (
 		<div className="flex h-full w-full min-h-0 overflow-hidden
 			scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700 hover:scrollbar-thumb-zinc-600"
@@ -216,6 +253,10 @@ const Editor = function ({user}) {
 						trigger={trigger}
 						onLoadFolder={LoadFolders}
 						setFileTrigger={setFileTrigger}
+
+						handleCodeFileSelect={handleCodeFileSelect}
+						activeProject={activeProject}
+						setActiveProject={setActiveProject}
 					/>
 				}
 			</div>
@@ -227,7 +268,7 @@ const Editor = function ({user}) {
 						setActiveFile={setActiveFile} activeFile={activeFile} setOpenTerminal={setOpenTerminal}
 						handleReconnect={handleReconnect}
 					/>
-					<WriteFile activeFile={activeFile} currentDevice={currentDevice} setFileTrigger={setFileTrigger}/>
+					<WriteFile activeFile={activeFile} currentDevice={currentDevice} setFileTrigger={setFileTrigger} activeProject={activeProject}/>
 				</div>
 				<div className="flex min-h-0 flex-1">
 					{activeFile ?
@@ -245,11 +286,11 @@ const Editor = function ({user}) {
 				</div>
 				
 				{openTerminal &&
-				<>
+				<div className="">
 					<div onMouseDown={(e) => handleMouseDownHeight(e, terminalRef, setTerminalHeight)}
-						className="group h-1 shrink-0 cursor-row-resize flex items-center p-[1px]"
+						className="group h-1 shrink-0 bg-zinc-800/50 double-click:bg-purple-500 cursor-row-resize flex items-center p-[1px]"
 					>
-						<div className="w-full border border-zinc-500/40 group hover:border-purple-500"></div>
+						<div className="group-hover:bg-purple-500"></div>
 					</div>
 					<div 
 						ref={terminalRef}
@@ -266,9 +307,11 @@ const Editor = function ({user}) {
 							backend={backend}
 							output={output}
 							setOutput={setOutput}
+							activeFile={activeFile}
+							currentDevice={currentDevice}
 						/>
 					</div>
-				</>
+				</div>
 				}
 				
 			</div>

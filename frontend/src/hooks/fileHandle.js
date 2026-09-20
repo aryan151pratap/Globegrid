@@ -2,7 +2,7 @@ import { useNotify } from "../components/Device-IDE/notify";
 import { sendToBackend } from "../services/deviceService";
 
 
-export const handleCreateDevice = (currentDevice, entry_type, input, currentFolder) => {
+export const handleCreateDeviceFile = (currentDevice, entry_type, input, currentFolder) => {
     try {
         const data = {
             device_id: currentDevice,
@@ -19,7 +19,7 @@ export const handleCreateDevice = (currentDevice, entry_type, input, currentFold
 };
 
 
-export const handleDeleteDevice = (currentDevice, entry_type, path) => {
+export const handleDeleteDeviceFile = (currentDevice, entry_type, path) => {
     try {
         const data = {
             device_id: currentDevice,

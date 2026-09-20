@@ -1,7 +1,7 @@
 import Editor from "@monaco-editor/react";
 import { useRef, useEffect } from "react";
 
-export default function EditorFile({ file, onChange, fontsize = 15, lineHeight = 25}) {
+export default function EditorFile({ file, onChange, fontsize = 14, lineHeight = 20}) {
     const editorRef = useRef(null);
     const currentFileId = useRef(file.id);
 
@@ -31,12 +31,23 @@ export default function EditorFile({ file, onChange, fontsize = 15, lineHeight =
             editor.setPosition(position);
         }
     }, [file.content, file.id]);
-
+    
+    const handleBeforeMount = (monaco) => {
+        monaco.editor.defineTheme("pure-black", {
+            base: "vs-dark",
+            inherit: true,
+            rules: [],
+            colors: {
+                "editor.background": "#181818",
+            },
+        });
+    };
     return (
         <div className="min-h-0 min-w-0 h-full flex-1">
             <Editor
                 height="100%"
-                theme="vs-dark"
+                theme="pure-black"
+                beforeMount={handleBeforeMount}
                 language={file.language}
                 path={file.id}
                 defaultValue={file.content}
@@ -59,7 +70,7 @@ export default function EditorFile({ file, onChange, fontsize = 15, lineHeight =
                     folding: true,
                     wordWrap: "off",
                     scrollBeyondLastLine: false,
-                    cursorBlinking: "smooth",
+                    cursorBlinking: "",
                     smoothScrolling: true,
                     bracketPairColorization: { enabled: true },
                     guides: {
@@ -67,11 +78,11 @@ export default function EditorFile({ file, onChange, fontsize = 15, lineHeight =
                         bracketPairs: true,
                     },
                     padding: {
-                        top: 16,
-                        bottom: 16,
+                        top: 10,
+                        bottom: 10,
                     },
                     scrollbar: {
-                        verticalScrollbarSize: 10,
+                        verticalScrollbarSize: 0,
                         horizontalScrollbarSize: 10,
                     },
                 }}

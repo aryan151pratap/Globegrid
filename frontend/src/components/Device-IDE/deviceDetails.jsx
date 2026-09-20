@@ -7,15 +7,6 @@ const DeviceDetails = function({devices, setCurrentDevice, currentDevice}){
 	const [current, setCurrent] = useState();
 	return(
 		<div className="h-full flex flex-col w-full border-t-1 border-zinc-800 mt-auto">
-			<div className="w-full flex items-center px-2 border-b border-zinc-800/50 font-semibold cursor-pointer hover:bg-zinc-500/1">
-				<span>
-					<VscChevronDownCompact/>
-				</span>
-				<span className="uppercase p-2 flex gap-2 items-center text-xs">
-					<VscChip className="h-4 w-4"/> 
-					<span>Devices</span>
-				</span>
-			</div>
 			<div className="h-full w-full flex flex-col text-[13px] text-zinc-400 overflow-auto dark-scrollbar">
 				{devices?.map((i, index) => {
 					const conn = i.status === "online" && currentDevice == i.device_id;
@@ -54,6 +45,7 @@ const DeviceDetails = function({devices, setCurrentDevice, currentDevice}){
 						</div>
 					</div>			
 				)})}
+				
 				<div className="mb-2"/>
 			</div>
 		</div>		

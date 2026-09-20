@@ -17,7 +17,7 @@ def get_database_url():
     if DB_ENV == "local":
 
         host = "localhost"
-        port = "3306"
+        port = "3307"
         database = "iot_db"
         username = "root"
         password = "root"

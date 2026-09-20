@@ -5,8 +5,9 @@ import { FaRunning, FaTimes } from "react-icons/fa";
 import { FileOutput } from "lucide-react";
 import { VscBook, VscRunCompact, VscStopCircle } from "react-icons/vsc";
 import { handleMouseDown } from "../../services/silde.js";
+import { sendToBackend } from "../../services/deviceService.js";
 
-export default function TerminalFile({terminal, setTerminal, onClear, onClose, onSend, iotConn, backend, output, setOutput}) {
+export default function TerminalFile({terminal, setTerminal, onClear, onClose, onSend, iotConn, backend, output, setOutput, activeFile, currentDevice}) {
 	const [input, setInput] = useState(""); 
 	const inputRef = useRef(null); 
 	const {ref: terminalRef, handleScroll} = useAutoScroll(terminal);
@@ -70,7 +71,7 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
     };
 
 	return (
-		<section onClick={handleParentClick} className="relative group font-mono h-full min-h-0 flex flex-col border-zinc-800 bg-[#09090b] overflow-auto">
+		<section onClick={handleParentClick} className="relative group border-t font-mono h-full min-h-0 flex flex-col border-zinc-800 bg-[#09090b] overflow-auto dark-scrollbar">
 			<div className="h-fit w-full flex shrink-0 items-center bg-[#111113] overflow-auto hide-scrollbar">
 				{options.map((item) => (
 					<div
@@ -79,7 +80,7 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 						className={`
 							flex items-center gap-5 h-full px-2
 							border-r border-zinc-800 cursor-pointer
-							${option === item.id && !side ? "bg-zinc-900 text-white" : "text-zinc-500"}
+							${option === item.id && !side ? "bg-zinc-900/80 text-white" : "text-zinc-400"}
 						`}
 					>
 						<div
@@ -99,7 +100,7 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 						<VscBook/>
 					</button>
 				</div>
-				<div className="flex flex-row overflow-auto hide-scrollbar">
+				<div className="h-full flex flex-row overflow-auto hide-scrollbar">
 					{connection?.map((i, index) => (
 						<div key={index} className="flex flex-row text-xs text-white border-r border-zinc-800">
 							<div className="uppercase p-1 bg-zinc-500/10 border-r border-zinc-800">
@@ -180,18 +181,62 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 					}}
 					className={`${option == "output" || side ? "flex" : "hidden"} flex flex-col w-full h-full`}
 				>
-					<RawOutput output={output} setOutput={setOutput}/>
+					<RawOutput output={output} setOutput={setOutput} activeFile={activeFile} currentDevice={currentDevice}/>
 				</div>
 			</div>
 		</section>
 	);
 }
 
-const RawOutput = function({output, setOutput}){
+const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 	const [raw, setRaw] = useState(false);
 	const {ref: outputRef, handleScroll} = useAutoScroll(output);
+	const [message, setMessage] = useState(null);
+	const [execute, setExecute] = useState(false);
+	useEffect(() => {
+		setExecute(activeFile?.origin === "device");
+	}, [activeFile])
+
+	const stop = () => {
+		if(!execute) return; 
+		setMessage("stoping ...");
+		try{
+			const data = {
+				type: "terminal_input",
+				data: "stop",
+				device_id: currentDevice
+			}
+			sendToBackend(data);
+		} catch (err) {
+			console.log(err);
+			setMessage("stop failed");
+			return;
+		} setMessage("stopped");
+	}
+
+	const run = () => {
+		if(!execute) return;
+		if (!activeFile?.path) {
+			setMessage("no file selected");
+			return;
+		}
+		setMessage("running ...");
+		try{
+			const path = activeFile.path;
+			const data = {
+				type: "terminal_input",
+				data: `boot ${path}`,
+				device_id: currentDevice
+			}
+			sendToBackend(data);
+		} catch (err) {
+			console.log(err);
+			setMessage("run failed");
+			return;
+		} setMessage("runned");
+	}
 	return(
-		<div className="w-full h-full flex flex-col border border-zinc-800 rounded-md overflow-auto">
+		<div className="w-full h-full flex flex-col border border-zinc-800 rounded-md overflow-hidden">
 			{output?.length > 0 ? (
 				<div ref={outputRef} onScroll={handleScroll} className="h-full overflow-auto dark-scrollbar p-2 pb-8 flex flex-col gap-1">
 					{output.map((item, index) => (
@@ -229,13 +274,29 @@ const RawOutput = function({output, setOutput}){
 				</div>
 			)}
 			<div className="w-full h-fit bg-black p-1 border-t border-zinc-800/60">
-				<div className="text-xs font-inter flex flex-row gap-1 text-white">
-					<button className="px-2 p-0.5 bg-zinc-500/20 hover:bg-purple-600/60">
+				<div className="text-xs font-inter flex flex-row gap-1 text-white overflow-auto dark-scrollbar">
+					<button className="px-2 p-0.5 bg-zinc-500/20 disabled:cursor-not-allowed hover:bg-purple-600/60"
+						onClick={() => run()}
+						disabled={!execute}
+					>
 						<VscRunCompact/>
 					</button>
-					<button className="px-2 p-0.5 bg-zinc-500/20 hover:bg-red-600/60">
+					<button className="px-2 p-0.5 bg-zinc-500/20 disabled:cursor-not-allowed hover:bg-red-600/60"
+						onClick={() => stop()}
+						disabled={!execute}
+					>
 						stop
 					</button>
+					{activeFile?.path &&
+					<div className="bg-zinc-500/20 px-2 text-zinc-400 flex items-center hover:text-zinc-200">
+						<span>{activeFile?.path}</span>
+					</div>
+					}
+					{message &&
+					<div className="px-2 flex items-center bg-zinc-500/20 text-zinc-400">
+						<span className="line-clamp-1">{message}</span>
+					</div>
+					}
 					<button className="ml-auto text-white bg-zinc-500/20 px-2 p-0.5 hover:bg-purple-600/60 cursor-pointer"
 						onClick={() => setOutput([])}
 					>

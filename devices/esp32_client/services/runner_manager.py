@@ -1,14 +1,14 @@
 import sys
 import os
 import uasyncio as asyncio
-
 from services import device
+from config import USER_ROOT
+from services.path_utils import normalize_module_name
 
-USER_PATH = "/esp32_client/user"
 DEFAULT_MODULE = "runner"
 
-if USER_PATH not in sys.path:
-    sys.path.append(USER_PATH)
+if USER_ROOT not in sys.path:
+    sys.path.append(USER_ROOT)
 
 
 class RunnerManager:
@@ -18,11 +18,39 @@ class RunnerManager:
         self.client = None
         self.current_module = None
 
-    def _list_user_files(self):
+    def _walk_py_files(self, root, rel=""):
+        results = []
         try:
-            return [f[:-3] for f in os.listdir(USER_PATH) if f.endswith(".py")]
-        except OSError:
-            return []
+            entries = os.ilistdir(root)
+        except (OSError, AttributeError):
+            try:
+                for name in os.listdir(root):
+                    full = root + "/" + name
+                    try:
+                        mode = os.stat(full)[0]
+                    except OSError:
+                        continue
+                    rel_path = (rel + "/" + name) if rel else name
+                    if mode & 0x4000:  # dir
+                        results.extend(self._walk_py_files(full, rel_path))
+                    elif name.endswith(".py"):
+                        results.append(rel_path[:-3])
+            except OSError:
+                pass
+            return results
+ 
+        for entry in entries:
+            name, etype = entry[0], entry[1]
+            full = root + "/" + name
+            rel_path = (rel + "/" + name) if rel else name
+            if etype & 0x4000:  # dir
+                results.extend(self._walk_py_files(full, rel_path))
+            elif name.endswith(".py"):
+                results.append(rel_path[:-3])
+        return results
+
+    def _list_user_files(self):
+        return self._walk_py_files(USER_ROOT)
 
     async def _send_output(self, message, level="error"):
         if not self.client:
@@ -38,6 +66,7 @@ class RunnerManager:
             print("Failed to send output:", e)
 
     async def _launch(self, module_name):
+        module_name = normalize_module_name(module_name)
         if module_name not in self._list_user_files():
             msg = "file not found: " + module_name + ".py"
             print("Module not found in user folder:", module_name)
@@ -46,6 +75,7 @@ class RunnerManager:
 
         try:
             device.init(self.client)
+            print(module_name)
             for name in self._list_user_files():
                 if name in sys.modules:
                     del sys.modules[name]

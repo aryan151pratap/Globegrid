@@ -134,12 +134,10 @@
 # 			await client.send_json(res)
 
 
-
 import os
 import asyncio
-
-USER_ROOT = "/esp32_client"
-
+from config import USER_ROOT
+from services.path_utils import safe_path
 
 class Manager:
 
@@ -152,21 +150,7 @@ class Manager:
 				pass
 
 	def _safe_path(self, path):
-		"""Resolve any client-supplied path into an absolute path
-		INSIDE self.root. '..' can never climb above the sandbox root —
-		extra '..' segments are simply dropped once the stack is empty."""
-		path = path or "/"
-		parts = path.replace("\\", "/").split("/")
-		stack = []
-		for part in parts:
-			if part in ("", "."):
-				continue
-			if part == "..":
-				if stack:
-					stack.pop()
-				continue
-			stack.append(part)
-		return self.root + "/" + "/".join(stack) if stack else self.root
+		return safe_path(path, self.root)
 
 	def res_back(self, type, request_id, request_type, data, path, operation, stream = False):
 		return {
@@ -279,6 +263,21 @@ class Manager:
 		abs_path = self._safe_path(raw_path)
 		try:
 			with open(abs_path, "r") as f:
+				total_lines = 0
+				for _ in f:
+					total_lines += 1
+				f.seek(0)
+				await client.send_json({
+					"type": type,
+					"data": "",
+					"request_id": request_id,
+					"request_type": request_type,
+					"path": raw_path,
+					"stream": True,
+					"operation": operation,
+					"total_lines": total_lines
+				})
+				c = 0
 				for line in f:
 					await client.send_json({
 						"type": type,
@@ -287,8 +286,10 @@ class Manager:
 						"request_type": request_type,
 						"path": raw_path,
 						"stream": True,
-						"operation": operation
+						"operation": operation,
+						"count": c
 					})
+					c+=1
 
 			res = self.res_back(type, request_id, request_type, "", raw_path, operation, False)
 			await client.send_json(res)

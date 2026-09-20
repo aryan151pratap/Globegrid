@@ -13,6 +13,8 @@ import CarController from './pages/carController.jsx';
 import FailedRoute from './failedroute.jsx';
 import AuthPage from './pages/login.jsx';
 import Profile from './components/profile/profile.jsx';
+import Inventory from './components/project/invetory.jsx';
+import Show from './components/project_ui/show.jsx';
 
 export default function App() {
   return (
@@ -29,7 +31,9 @@ export default function App() {
               <Route path="/agent" element={<Agent/>} />
               <Route path="/settings" element={<CarController/>}/>
               <Route path="/profile" element={<Profile/>}></Route>
+              <Route path="/inventory" element={<Inventory/>}></Route>
             </Route>
+            <Route path="/project/:project_id" element={<Show/>}></Route>
           </Route>
           <Route path="*" element={<FailedRoute />} />
       </Routes>

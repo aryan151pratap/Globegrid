@@ -5,6 +5,8 @@ import time
 import _thread
 import uasyncio as asyncio
 import machine
+from config import USER_ROOT
+from services.path_utils import safe_path
 
 class StreamStopped(Exception):
     pass
@@ -23,15 +25,17 @@ class Terminal:
 
         self._request_id = None
         self._request_type = None
+        self._root = USER_ROOT.rstrip("/") or "/"
 
     def reset(self):
         self.exec_globals = {"os": os, "machine": machine, "print": self._sync_print, "run": self._run_file}
         self._queue = []
 
     def _run_file(self, path):
-        with open(path) as f:
+        resolved = safe_path(path, self._root)
+        with open(resolved) as f:
             source = f.read()
-        exec(compile(source, path, "exec"), self.exec_globals, self.exec_globals)
+        exec(compile(source, resolved, "exec"), self.exec_globals, self.exec_globals)
 
     def _push(self, item, ignore_stop=False):
         while True:

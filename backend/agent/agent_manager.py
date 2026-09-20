@@ -4,31 +4,6 @@ from agent.tools.user_tools import User_tools
 from fastapi import WebSocket
 from starlette.websockets import WebSocketState
 
-async def agent_details(self, user_id: int):
-    agent = self.agents.get(user_id)
-    websockets = self.connections.get(user_id, [])
-    if not websockets or not agent:
-        return
-    data = {
-        "type": "details",
-        "user_id": user_id,
-        "current_device": agent.device_id,
-        "model": agent.model,
-        "provider": agent.provider,
-        "tools": [tool.name if hasattr(tool, "name") else tool.__name__ for tool in agent.tools],
-    }
-    dead = []
-    for websocket in websockets:
-        if websocket.client_state != WebSocketState.CONNECTED:
-            dead.append(websocket)
-            continue
-        try:
-            await websocket.send_json(data)
-        except Exception:
-            dead.append(websocket)
-
-    for ws in dead:
-        self.remove_connection(user_id, ws)
 class AgentManager:
 	def __init__(self):
 		self.agents = {}

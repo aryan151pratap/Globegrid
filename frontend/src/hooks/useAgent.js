@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { connectAgent, disconnectAgent } from "../services/deviceService";
 import { useNotify } from "../components/Device-IDE/notify";
 import { agent_model_list } from "./agentHandle";
-
+import { addFileChange } from "../services/fileChangeStore";
 const BASE_RETRY_MS = 1000;
 const MAX_RETRY_MS = 15000;
 
@@ -51,6 +51,16 @@ export const useAgent = () => {
     const handleAgentMessage = useCallback((data) => {
         console.log("Agent response:", data);
         const type = data.type;
+        if (data.type === "file_changed") {
+            addFileChange({
+                id: Date.now(),
+                path: data.path,
+                operation: data.operation,
+                version: data.version,
+            });
+
+            return;
+        }
         if(type === "model_changed"){
             setDetails((e) => ({...e, provider: data.provider, model: data.model}));
             return;

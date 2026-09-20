@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { FiChevronDown, FiChevronRight, FiTrash } from "react-icons/fi";
 import { VscFileCode, VscFolder, VscFolderOpened, VscJson, VscMarkdown, VscPython } from "react-icons/vsc";
-import { handleDeleteDevice } from "../../hooks/fileHandle";
 
 function joinPath(parentPath, name) {
 	if (!parentPath || parentPath === "/") return `/${name}`;
@@ -95,7 +94,6 @@ export default function FileManager({
 	};
 
 	
-
 	const renderNode = (rawNode, parentPath, depth) => {
 		const path = rawNode.path || joinPath(parentPath, rawNode.name);
 		const node = { ...rawNode, path };
@@ -113,24 +111,24 @@ export default function FileManager({
 					style={{ paddingLeft: depth * 14 + 8 }}
 					title={path}
 					className={`group flex h-6 cursor-pointer items-center gap-1.5 pr-2 text-[13px] transition ${
-						isActiveFile || isActiveFolder
-							? "bg-zinc-800 text-white"
+						isActiveFile ? "bg-zinc-900 text-white" : isActiveFolder
+							? "bg-zinc-600/20 text-white"
 							: "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
 					}`}
 				>
 					{isFolder ? (
-						<>
+						<div className="flex flex-row gap-1 items-center">
 							{isOpen ? (
-								<FiChevronDown size={13} className="shrink-0 text-zinc-500" />
+								<FiChevronDown size={14} className="shrink-0 text-zinc-500" />
 							) : (
-								<FiChevronRight size={13} className="shrink-0 text-zinc-500" />
+								<FiChevronRight size={14} className="shrink-0 text-zinc-500" />
 							)}
 							{isOpen ? (
 								<VscFolderOpened size={14} className="shrink-0 text-zinc-500" />
 							) : (
 								<VscFolder size={14} className="shrink-0 text-zinc-500" />
 							)}
-						</>
+						</div>
 					) : (
 						<>
 							<span className="w-[13px] shrink-0" />

@@ -7,7 +7,8 @@ import {
     CiCamera,
     CiFaceFrown,
     CiImageOn,
-    CiFaceSmile
+    CiFaceSmile,
+    CiBoxes
 } from "react-icons/ci";
 import { FaCode } from "react-icons/fa";
 
@@ -52,9 +53,9 @@ const SideBar = ({ user }) => {
                     icon: <CiViewList />
                 },
                 {
-                    name: "Camera",
-                    path: "/camera",
-                    icon: <CiCamera/>
+                    name: "Inventory",
+                    path: "/inventory",
+                    icon: <CiBoxes />
                 }
             ]
         },

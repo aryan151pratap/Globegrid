@@ -19,7 +19,7 @@ async def receive_loop(client, terminal):
     while True:
         response = await client.receive()
         if response is None:
-            continue
+            raise Exception("server closed the connection")
         try:
             response = json.loads(response)
         except Exception as e:
