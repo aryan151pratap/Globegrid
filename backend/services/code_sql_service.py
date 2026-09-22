@@ -304,6 +304,57 @@ class CodeService:
         finally:
             db.close()
 
+    def update_details(self, project_id: int, user_id: int, fields: dict):
+        allowed = ("name", "description", "language", "device_id")
+        updates = {k: v for k, v in fields.items() if k in allowed}
+
+        if not updates:
+            raise ValueError("No valid fields to update")
+
+        if "name" in updates:
+            updates["name"] = (updates["name"] or "").strip()
+            if not updates["name"]:
+                raise ValueError("Name cannot be empty")
+
+        if updates.get("device_id") == "":
+            updates["device_id"] = None
+
+        set_clause = ", ".join(f"{k} = :{k}" for k in updates)
+
+        db = SessionLocal()
+
+        try:
+            db.execute(
+                text(f"""
+                    UPDATE projects
+                    SET {set_clause}, updated_at = NOW()
+                    WHERE id = :project_id AND user_id = :user_id
+                """),
+                {**updates, "project_id": project_id, "user_id": user_id}
+            )
+
+            row = db.execute(
+                text("""
+                    SELECT id, user_id, device_id, name, description, language, created_at, updated_at
+                    FROM projects
+                    WHERE id = :project_id AND user_id = :user_id
+                """),
+                {"project_id": project_id, "user_id": user_id}
+            ).mappings().first()
+
+            if not row:
+                raise ValueError(f"Project {project_id} not found for user {user_id}")
+
+            db.commit()
+            return dict(row)
+
+        except Exception as e:
+            db.rollback()
+            raise e
+
+        finally:
+            db.close()
+
     def delete_code(self, project_id: int, user_id: int):
         db = SessionLocal()
 

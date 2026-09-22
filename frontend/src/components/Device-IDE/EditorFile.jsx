@@ -1,15 +1,26 @@
 import Editor from "@monaco-editor/react";
 import { useRef, useEffect } from "react";
+import { enableAutoCloseTag, registerLinkedEditingTags } from "./autoCloseTag";
 
-export default function EditorFile({ file, onChange, fontsize = 14, lineHeight = 20}) {
+export default function EditorFile({ file, onChange, fontsize = 14, lineHeight = 20 }) {
     const editorRef = useRef(null);
+    const recentEmits = useRef([]);
     const currentFileId = useRef(file.id);
+    const autoCloseTagDisposableRef = useRef(null);
 
-    const handleEditorDidMount = (editor) => {
+    const handleEditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
+        autoCloseTagDisposableRef.current = enableAutoCloseTag(editor, monaco);
     };
 
+    useEffect(() => {
+        return () => {
+            autoCloseTagDisposableRef.current?.dispose();
+        };
+    }, []);
+
     const handleEditorChange = (value) => {
+        recentEmits.current = [...recentEmits.current.slice(-9), value];
         onChange(value);
     };
 
@@ -17,8 +28,11 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
         if (!editorRef.current) return;
         if (file.id !== currentFileId.current) {
             currentFileId.current = file.id;
+            recentEmits.current = [];
             return;
         }
+        if (recentEmits.current.includes(file.content)) return; // echo of our own typing
+
         const editor = editorRef.current;
         if (editor.getValue() !== file.content) {
             const model = editor.getModel();
@@ -31,7 +45,7 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
             editor.setPosition(position);
         }
     }, [file.content, file.id]);
-    
+
     const handleBeforeMount = (monaco) => {
         monaco.editor.defineTheme("pure-black", {
             base: "vs-dark",
@@ -41,6 +55,7 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
                 "editor.background": "#181818",
             },
         });
+        registerLinkedEditingTags(monaco);
     };
     return (
         <div className="min-h-0 min-w-0 h-full flex-1">
@@ -70,9 +85,11 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
                     folding: true,
                     wordWrap: "off",
                     scrollBeyondLastLine: false,
-                    cursorBlinking: "",
+                    cursorBlinking: "blink",
                     smoothScrolling: true,
                     bracketPairColorization: { enabled: true },
+                    // Required for registerLinkedEditingTags() above to activate.
+                    linkedEditing: true,
                     guides: {
                         indentation: true,
                         bracketPairs: true,

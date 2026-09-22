@@ -15,7 +15,7 @@ async def device_websocket(websocket: WebSocket):
             data = await websocket.receive_json()
             request_id = data.get("request_id")
             request_type = data.get("request_type")
-            print(data)
+            # print("backend websocket data ", data)
             if request_id:
                 if request_type == "http":
                     manager.resolve_request(

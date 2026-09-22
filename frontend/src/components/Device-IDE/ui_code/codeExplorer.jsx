@@ -1,10 +1,11 @@
-import { VscAdd, VscAddCompact, VscChevronRight, VscClose, VscCloseCompact, VscFileSymlinkDirectory, VscNewFile, VscNewFolder, VscRefresh, VscTrash } from "react-icons/vsc";
+import { VscAdd, VscAddCompact, VscChevronRight, VscClose, VscCloseCompact, VscEdit, VscEditCompact, VscFileSymlinkDirectory, VscNewFile, VscNewFolder, VscRefresh, VscTrash } from "react-icons/vsc";
 import UIFileExplorer from "./fodler_files";
 import { useEffect, useState } from "react";
-import { delete_file, delete_project, get_project, get_template, list_projects, save_file, save_project } from "../../../hooks/projectHandle";
+import { delete_file, delete_project, get_project, get_template, list_projects, save_file, save_project, update_project } from "../../../hooks/projectHandle";
 import { useNotify } from "../notify";
 import { sample_projects } from "../../project_ui/data";
 import { FaTimes } from "react-icons/fa";
+import { EditProject } from "./editProject";
 
 const array_of_files = function(data){
 	const fileArray = Object.entries(data.files).map(([path, content]) => ({
@@ -16,7 +17,7 @@ const array_of_files = function(data){
 	return {...data, files: fileArray};
 }
 
-const CodeExplorer = function({files, activeFile, onFileClick, activeProject, setActiveProject}){
+const CodeExplorer = function({files, activeFile, onFileClick, activeProject, setActiveProject, devices}){
 	const [trigger, setTrigger] = useState(0);
 	const [projectList, setProjectList] = useState([]);
 	const [activeFiles, setActiveFiles] = useState([]);
@@ -29,6 +30,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 
 	const [inputType, setInputType] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const [openEdit, setOpenEdit] = useState(false);
 	const notify = useNotify();
 
 	const fetchProjectList = async function(){
@@ -52,7 +54,9 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 	}, [trigger])
 
 	const handleRefresh = function(){
-		setTrigger((e) => e+1);
+		if(!activeProject) return;
+		console.log(activeProject);
+		get_project_files(activeProject, true);
 	}
 
 	const handleSelectFiles = function(item){
@@ -103,20 +107,25 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 	const handleSaveProject = async function(){
 		if(!activeProject) return;
 		try{
-			const res = await update_project(activeProject, activeProject?.project_id);
+			setLoading({read_project_list: true});
+			if(!activeProject?.id) {
+				notify({type: "warning", message: "project id not found"});
+				return;
+			}
+			const res = await update_project(activeProject, activeProject);
 			if(res) notify({type: "status", message: res.message});
 		} catch (err) {
 			notify({type: "error", message: err});
 		}
 	} 
 
-	const get_project_files = async function(project){
-		if(project?.files) {
+	const get_project_files = async function(project, force=false){
+		if(project?.files && !force) {
 			handleSelectFiles(project);
 			return;
 		}
 		try{
-			setLoading({read_project_files: true});
+			setLoading({read_project_files: true, read_project_list: true});
 			if(!project?.id) {
 				notify({type: "warning", message: "project id not found"});
 				return;
@@ -157,7 +166,6 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 				}
 				return e;
 			});
-			setTrigger((e) => e+1);
 		} catch (err) {
 			notify({type: "error", message: err});
 		} finally {
@@ -211,16 +219,29 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 			setLoading(false);
 		}
 	}
+
 	return(
 		<div className="group w-full h-full flex flex-col overflow-auto">
 			{loading?.read_project_list &&
 				<CodeLoading/>
 			}
+			{openEdit &&
+			<div>
+				<EditProject project={activeProject} setOpenEdit={setOpenEdit} projectList={projectList} setTrigger={setTrigger} devices={devices}/>
+			</div>
+			}
 			<div className="bg-[#CEF144]/90 flex flex-row items-center justify-between text-black">
 				<div className="text-black px-2 p-1 text-xs">
-					<span className="line-clamp-1" title={activeProject ? activeProject?.name : "Project"}>{activeProject ? activeProject?.name : "Project"}</span>
+					<span className="line-clamp-1 capitalize" title={activeProject ? activeProject?.name : "Project"}>{activeProject ? activeProject?.name : "Project"}</span>
 				</div>
 				<div className="flex flex-row px-2 gap-2 text-black/80">
+					<button
+						title="Edit Project"
+						className="rounded hover:text-zinc-700 cursor-pointer"
+						onClick={() => setOpenEdit(e => !e)}
+					>
+						<VscEdit/>
+					</button>
 					<button
 						title="New File"
 						className="rounded hover:text-zinc-700 cursor-pointer"
@@ -245,7 +266,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 			</div>
 			<div className="w-full">
 				{activeProject && activeFolder && (
-					<div className="w-full bg-zinc-500/10 px-2 p-1 flex flex-row items-center text-xs text-zinc-400 overflow-auto hide-scrollbar shrink-0">
+					<div className="w-full bg-zinc-500/10 border-b border-zinc-800 px-2 p-1 flex flex-row items-center text-xs text-zinc-400 overflow-auto hide-scrollbar shrink-0">
 						{activeFolder?.split("/").filter(Boolean).map((i, index, arr) => (
 							<div key={index} className="flex flex-row items-center">
 								<span className="">{i}</span>
@@ -375,7 +396,7 @@ export default CodeExplorer;
 
 const CodeLoading = function(){
 	return(
-		<div className="absolute bg-zinc-500/20 h-full w-full flex items-center justify-center">
+		<div className="absolute z-50 bg-zinc-500/20 h-full w-full flex items-center justify-center">
 			<div className="border-2 border-[#CEF144] p-2 rounded-full border-t-transparent animate-spin"></div>
 		</div>
 	)

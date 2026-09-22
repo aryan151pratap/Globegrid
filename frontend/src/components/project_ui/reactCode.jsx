@@ -1,8 +1,8 @@
 import { SandpackProvider, SandpackLayout, SandpackPreview } from "@codesandbox/sandpack-react";
 import { useMemo } from "react";
+import DeviceBridge from "./DeviceBridge";
 
-
-const ViewReactProject = ({ files }) => {
+const ViewReactProject = ({ files, device_id, setBackendConnection }) => {
 	const sandpackFiles = useMemo(() => {
 		const out = {};
 		Object.entries(files || {}).forEach(([path, content]) => {
@@ -21,6 +21,7 @@ const ViewReactProject = ({ files }) => {
 				options={{ externalResources: ["https://cdn.tailwindcss.com"] }}
 				style={{ height: "100%", width: "100%" }}
 			>
+				<DeviceBridge device_id={device_id} setBackendConnection={setBackendConnection}/>
 				<SandpackLayout style={{ height: "100%", width: "100%", border: "none", borderRadius: 0 }}>
 				<SandpackPreview
 					showNavigator={false}

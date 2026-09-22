@@ -30,7 +30,7 @@ export default function ProtectedLayout() {
 
             <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
                 {showSideBar && (
-                    <aside className="flex h-[94%] md:h-full fixed md:static z-50 backdrop-blur-md md:backdrop-blur-none bg-zinc-900/70 md:bg-zinc-900/0 md:bg-transparent shrink-0 overflow-hidden">                        
+                    <aside className="flex h-[94%] md:h-full fixed md:static z-20 backdrop-blur-md md:backdrop-blur-none bg-zinc-900/70 md:bg-zinc-900/0 md:bg-transparent shrink-0 overflow-hidden">                        
                         <SideBar user={user}/>
                     </aside>
                 )}

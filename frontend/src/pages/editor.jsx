@@ -21,8 +21,6 @@ const Editor = function ({user}) {
 	const [fileData, setFileData] = useState([]);
 
 	// ui code explorer
-	const [codeFiles, setCodeFiles] = useState([]);
-	const [codeFileData, setCodeFileData] = useState([]);
 	const [activeProject, setActiveProject] = useState(null);
 
 	const [activeFile, setActiveFile] = useState(null);

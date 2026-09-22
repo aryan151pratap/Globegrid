@@ -73,6 +73,22 @@ export const update_project = async (project_id, project) => {
 	}
 };
 
+export const update_project_details = async (project_id, project) => {
+	try {
+		const res = await API.put(`/project/${project_id}/details`, {
+			name: project.name,
+			description: project.description,
+			language: project.language,
+			device_id: project.device_id,
+		});
+
+		return res.data;
+	} catch (err) {
+		console.error("Failed to update project:", err);
+		return null;
+	}
+};	
+
 export const delete_project = async (project_id) => {
 	try {
 		const res = await API.delete(`/project/${project_id}`);

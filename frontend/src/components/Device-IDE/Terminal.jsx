@@ -198,7 +198,6 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 	}, [activeFile])
 
 	const stop = () => {
-		if(!execute) return; 
 		setMessage("stoping ...");
 		try{
 			const data = {
@@ -283,7 +282,6 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 					</button>
 					<button className="px-2 p-0.5 bg-zinc-500/20 disabled:cursor-not-allowed hover:bg-red-600/60"
 						onClick={() => stop()}
-						disabled={!execute}
 					>
 						stop
 					</button>

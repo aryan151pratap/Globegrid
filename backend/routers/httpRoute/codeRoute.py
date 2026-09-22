@@ -27,6 +27,12 @@ class FileSavePayload(BaseModel):
     path: str
     content: str | None = None
 
+class ProjectDetailsPayload(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    language: str | None = None
+    device_id: str | None = None
+
 @router.get("/project/template/{name}")
 async def get_template(request: Request, name: str):
     template = get_react_esp32_template(name)
@@ -147,6 +153,23 @@ async def delete_file(project_id: int, path: str, request: Request):
  
     return {"message": "file deleted"}
 
+@router.put("/project/{project_id}/details")
+async def update_project_details(project_id: int, payload: ProjectDetailsPayload, request: Request):
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="No user found")
+
+    fields = payload.model_dump(exclude_unset=True)
+
+    try:
+        project = code_service.update_details(project_id, user.get("user_id"), fields)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return {"message": "updated", "project": project}
 
 @router.delete("/project/{project_id}")
 async def delete_code(project_id: int, request: Request):

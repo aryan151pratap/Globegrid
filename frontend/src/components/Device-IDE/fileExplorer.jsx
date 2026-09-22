@@ -87,6 +87,7 @@ export default function FileExplorer({
 						onFileClick={handleCodeFileSelect}
 						activeProject={activeProject}
 						setActiveProject={setActiveProject}
+						devices={devices}
 					/>
 				</div>
 			)

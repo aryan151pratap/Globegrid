@@ -38,6 +38,7 @@ async def receive_loop(client, terminal):
             continue
         message_type = response.get("type")
         if message_type == "runner":
+            # print(response)
             runner_manager.handle_message(response)
         else:
             try:

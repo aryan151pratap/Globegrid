@@ -7,6 +7,7 @@ class Device(Base):
 
 	id = Column(Integer, primary_key=True)
 	location = Column(String(100), nullable=False)
+	device_id = Column(String(100), unique=True, nullable=False)
 	user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 	name = Column(String(100), nullable=False)
 	status = Column(String(20), default="offline")
