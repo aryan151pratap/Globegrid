@@ -55,7 +55,7 @@ export default function ProjectList({ data }) {
                                             </span>
                                         </div>
 
-                                        <h3 className="truncate text-sm font-semibold text-zinc-200">
+                                        <h3 className="capitalize truncate text-sm font-semibold text-zinc-200">
                                             {item?.name}
                                         </h3>
 
@@ -70,7 +70,7 @@ export default function ProjectList({ data }) {
                                 <div className="flex flex-1 flex-col px-4 py-3">
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="min-w-0">
-                                            <h2 className="truncate text-sm font-medium text-zinc-100">
+                                            <h2 className="capitalize truncate text-sm font-medium text-zinc-100">
                                                 {item?.name}
                                             </h2>
 

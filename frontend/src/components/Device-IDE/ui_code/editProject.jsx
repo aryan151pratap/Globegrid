@@ -4,9 +4,10 @@ import { VscEdit, VscCheck, VscClose } from "react-icons/vsc";
 import { update_project_details } from "../../../hooks/projectHandle";
 import { useNotify } from "../notify";
 
-export function EditProject({project, setOpenEdit, projectList, setTrigger, devices}) {
+export function EditProject({project, setOpenEdit, projectList, setTrigger, devices, handleGetTemplate, del_project}) {
 	const [addProject, setAddProject] = useState(false);
 	const [currentProject, setCurrentProject] = useState(null);
+	const [projectName, setProjectName] = useState("");
 	useEffect(() => {
 		setTrigger((e) => e+1);
 	}, [])
@@ -15,6 +16,14 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 		console.log(currentProject);
 	}, [currentProject])
 
+	const handleDelete = async function(){
+		try{
+			await del_project(currentProject);
+			setCurrentProject(null);
+		} catch (err) {
+			console.log(err);
+		}
+	}
 	
 	
 	return(
@@ -45,24 +54,21 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 									<div className="text-xs flex flex-row items-center gap-2 font-inter px-2 p-1">
 										<span className="text-zinc-300">{index+1}.</span>
 										<span title={i?.name} className="capitalize line-clamp-1">{i?.name}</span>
-										<button className="ml-auto hover:text-red-500"
-											onClick={() => del_project(i)}
-										>
-											<VscTrash size={14}/>
-										</button>
 									</div>
 								</div>
 							))}
 						</div>
+
 						{addProject &&
-						<div className="mt-auto w-full flex flex-row items-center border border-b-zinc-300/0 border-zinc-800/50 hover:border-b-[#CEF144] focus-within:border-b-[#CEF144] text-[#CEF144]">
+						<div className="w-full flex flex-row items-center border border-b-zinc-800/50 border-zinc-800/50 hover:border-b-[#CEF144] focus-within:border-b-[#CEF144] text-[#CEF144]">
 							<input type="text" value={projectName} 
 								onKeyDown={(e) => {
 									if (e.key === "Enter") {
-										handleGetTemplate();
+										handleGetTemplate(projectName);
+										setAddProject(false);
 									}
 								}}
-								onChange={(e) => setProjectName(e.target.value)} placeholder="Enter project name...." className="hover:bg-zinc-500/20 placeholder:text-[#CEF144]/60 focus:bg-zinc-500/20 text-xs w-full bg-black outline-none px-2 p-1"
+								onChange={(e) => setProjectName(e.target.value)} placeholder="Enter project name...." className="hover:bg-zinc-500/20 placeholder:text-[#CEF144]/60 focus:bg-zinc-500/20 text-xs w-full bg-black outline-none p-1.5"
 							/>
 								
 							<span className="p-1 cursor-pointer"
@@ -73,7 +79,7 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 						</div>
 						}
 						<div className="w-fit p-1 flex text-xs text-black">
-							<button className="bg-[#CEF144] px-2 p-1 flex flex-row gap-1 items-center rounded-md"
+							<button className="bg-[#CEF144] px-2 p-1 rounded flex flex-row items-center gap-1"
 								onClick={() => setAddProject(true)}
 							>
 								<VscAddCompact/>
@@ -95,10 +101,15 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 								<ProjectDetails currentProject={currentProject} setCurrentProject={setCurrentProject} setTrigger={setTrigger} devices={devices}/>
 							</div>
 
-							<div className="w-full mt-auto border-t border-zinc-800">
+							<div className="w-full mt-auto border-t border-zinc-800 flex flex-row">
 								<button className="flex flex-row items-center gap-1 border-r border-zinc-800 hover:bg-zinc-500/20 px-2 p-1 bg-zinc-500/10">
 									open
 									<VscArrowRight/>
+								</button>
+								<button className="flex flex-row items-center gap-1 border-r border-zinc-800 hover:bg-zinc-500/20 px-2 p-1 bg-zinc-500/10"
+									onClick={() => handleDelete()}
+								>
+									Delete <VscTrash className=""/>
 								</button>
 							</div>
 						</div>

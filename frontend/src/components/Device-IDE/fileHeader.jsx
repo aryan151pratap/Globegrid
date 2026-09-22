@@ -7,7 +7,7 @@ import { getFileIcon } from "./fileIcons";
 const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, setActiveFile, setOpenTerminal, handleReconnect, activeProject}) {
 
 	const [activesFiles, setActivesFiles] = useState([]);
-	
+
 	useEffect(() => {
 		if(!activeFile) return;
 		setActivesFiles((prev) => {
@@ -49,7 +49,7 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 							onClick={() => setActiveFile(i)}
 						>
 							{getFileIcon(i?.name, 16)}
-							<span className={`${activeProject?.id !== i.projectId ? "italic text-zinc-400" : ""}`}>{i?.name}</span>
+							<span className={`${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""}`}>{i?.name}</span>
 							<button
 								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"
 								onClick={(e) => handleCloseTab(e, i)}

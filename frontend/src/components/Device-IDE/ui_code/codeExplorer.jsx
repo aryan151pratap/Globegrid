@@ -79,7 +79,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 		setAddProject(false);
 	}
 
-	const handleGetTemplate = async function(){
+	const handleGetTemplate = async function(projectName){
 		if(!projectName.trim()) return;
 		const find = projectList.find((item) => item.name == projectName);
 		if(find) {
@@ -227,7 +227,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 			}
 			{openEdit &&
 			<div>
-				<EditProject project={activeProject} setOpenEdit={setOpenEdit} projectList={projectList} setTrigger={setTrigger} devices={devices}/>
+				<EditProject project={activeProject} setOpenEdit={setOpenEdit} projectList={projectList} setTrigger={setTrigger} devices={devices} handleGetTemplate={handleGetTemplate} del_project={del_project}/>
 			</div>
 			}
 			<div className="bg-[#CEF144]/90 flex flex-row items-center justify-between text-black">
@@ -337,7 +337,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 						<input type="text" value={projectName} 
 							onKeyDown={(e) => {
 								if (e.key === "Enter") {
-									handleGetTemplate();
+									handleGetTemplate(projectName);
 								}
 							}}
 							onChange={(e) => setProjectName(e.target.value)} placeholder="Enter project name...." className="hover:bg-zinc-500/20 placeholder:text-[#CEF144]/60 focus:bg-zinc-500/20 text-xs w-full bg-black outline-none px-2 p-1"
