@@ -554,10 +554,10 @@ export default function Landing() {
           </div>
 
           <div className="iot-nav-links">
-            <a href="#devices">Devices</a>
-            <a href="#features">Features</a>
-            <a href="#terminal">Terminal</a>
-            <a href="#docs">Docs</a>
+            <a href="/devices">Devices</a>
+            <a href="/features">Features</a>
+            <a href="/inventory">Inventory</a>
+            <a href="/docs">Docs</a>
           </div>
 
           <button className="iot-nav-btn">

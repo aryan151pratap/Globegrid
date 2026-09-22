@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import text
-from db.database import SessionLocal
+from db.database import SessionLocal, CURRENT_TIMESTAMP_SQL, IS_AZURE
 
 
 class CodeService:
@@ -23,41 +23,67 @@ class CodeService:
         db = SessionLocal()
 
         try:
-            query = text("""
-                INSERT INTO projects (
-                    user_id,
-                    device_id,
-                    name,
-                    description,
-                    files,
-                    language,
-                    created_at,
-                    updated_at
-                )
-                VALUES (
-                    :user_id,
-                    :device_id,
-                    :name,
-                    :description,
-                    :files,
-                    :language,
-                    NOW(),
-                    NOW()
-                )
-            """)
+            params = {
+                "user_id": user_id,
+                "device_id": device_id,
+                "name": name,
+                "description": description,
+                "files": json.dumps(files),
+                "language": language
+            }
 
-            result = db.execute(
-                query,
-                {
-                    "user_id": user_id,
-                    "device_id": device_id,
-                    "name": name,
-                    "description": description,
-                    "files": json.dumps(files),
-                    "language": language
-                }
-            )
-            new_id = result.lastrowid
+            if IS_AZURE:
+                # lastrowid isn't reliable for raw text() inserts on mssql/pyodbc,
+                # so have SQL Server hand the new id back directly.
+                query = text(f"""
+                    INSERT INTO projects (
+                        user_id,
+                        device_id,
+                        name,
+                        description,
+                        files,
+                        language,
+                        created_at,
+                        updated_at
+                    )
+                    OUTPUT INSERTED.id
+                    VALUES (
+                        :user_id,
+                        :device_id,
+                        :name,
+                        :description,
+                        :files,
+                        :language,
+                        {CURRENT_TIMESTAMP_SQL},
+                        {CURRENT_TIMESTAMP_SQL}
+                    )
+                """)
+                new_id = db.execute(query, params).scalar()
+            else:
+                query = text(f"""
+                    INSERT INTO projects (
+                        user_id,
+                        device_id,
+                        name,
+                        description,
+                        files,
+                        language,
+                        created_at,
+                        updated_at
+                    )
+                    VALUES (
+                        :user_id,
+                        :device_id,
+                        :name,
+                        :description,
+                        :files,
+                        :language,
+                        {CURRENT_TIMESTAMP_SQL},
+                        {CURRENT_TIMESTAMP_SQL}
+                    )
+                """)
+                result = db.execute(query, params)
+                new_id = result.lastrowid
 
             select_query = text("""
                 SELECT id, user_id, device_id, name, description, files, language, created_at, updated_at
@@ -160,7 +186,7 @@ class CodeService:
         db = SessionLocal()
 
         try:
-            query = text("""
+            query = text(f"""
                 UPDATE projects
                 SET
                     name = :name,
@@ -168,7 +194,7 @@ class CodeService:
                     files = :files,
                     language = :language,
                     device_id = :device_id,
-                    updated_at = NOW()
+                    updated_at = {CURRENT_TIMESTAMP_SQL}
                 WHERE id = :project_id AND user_id = :user_id
             """)
 
@@ -204,12 +230,21 @@ class CodeService:
         db = SessionLocal()
 
         try:
-            select_query = text("""
-                SELECT files
-                FROM projects
-                WHERE id = :project_id AND user_id = :user_id
-                FOR UPDATE
-            """)
+            if IS_AZURE:
+                # SQL Server has no "FOR UPDATE" clause — the row-lock hint
+                # goes on the table reference instead.
+                select_query = text("""
+                    SELECT files
+                    FROM projects WITH (UPDLOCK, ROWLOCK)
+                    WHERE id = :project_id AND user_id = :user_id
+                """)
+            else:
+                select_query = text("""
+                    SELECT files
+                    FROM projects
+                    WHERE id = :project_id AND user_id = :user_id
+                    FOR UPDATE
+                """)
 
             result = db.execute(
                 select_query,
@@ -222,9 +257,9 @@ class CodeService:
             files = self._load_files(result["files"])
             files[path] = content
 
-            update_query = text("""
+            update_query = text(f"""
                 UPDATE projects
-                SET files = :files, updated_at = NOW()
+                SET files = :files, updated_at = {CURRENT_TIMESTAMP_SQL}
                 WHERE id = :project_id AND user_id = :user_id
             """)
 
@@ -256,12 +291,19 @@ class CodeService:
         db = SessionLocal()
 
         try:
-            select_query = text("""
-                SELECT files
-                FROM projects
-                WHERE id = :project_id AND user_id = :user_id
-                FOR UPDATE
-            """)
+            if IS_AZURE:
+                select_query = text("""
+                    SELECT files
+                    FROM projects WITH (UPDLOCK, ROWLOCK)
+                    WHERE id = :project_id AND user_id = :user_id
+                """)
+            else:
+                select_query = text("""
+                    SELECT files
+                    FROM projects
+                    WHERE id = :project_id AND user_id = :user_id
+                    FOR UPDATE
+                """)
 
             result = db.execute(
                 select_query,
@@ -279,9 +321,9 @@ class CodeService:
 
             del files[path]
 
-            update_query = text("""
+            update_query = text(f"""
                 UPDATE projects
-                SET files = :files, updated_at = NOW()
+                SET files = :files, updated_at = {CURRENT_TIMESTAMP_SQL}
                 WHERE id = :project_id AND user_id = :user_id
             """)
 
@@ -327,7 +369,7 @@ class CodeService:
             db.execute(
                 text(f"""
                     UPDATE projects
-                    SET {set_clause}, updated_at = NOW()
+                    SET {set_clause}, updated_at = {CURRENT_TIMESTAMP_SQL}
                     WHERE id = :project_id AND user_id = :user_id
                 """),
                 {**updates, "project_id": project_id, "user_id": user_id}

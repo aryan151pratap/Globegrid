@@ -7,7 +7,7 @@ import {
     VscArrowRight,
 } from "react-icons/vsc";
 
-export default function ProjectList({ data }) {
+export default function ProjectList({ data, loading }) {
     return (
         <div className="flex-1 min-h-0 overflow-auto dark-scrollbar px-1 py-1">
             {data?.length ? (
@@ -155,7 +155,13 @@ export default function ProjectList({ data }) {
                         );
                     })}
                 </div>
-            ) : (
+            ) : loading ? 
+                <div className="w-full h-full min-h-64 flex items-center justify-center">
+                    <div className="p-3 border-2 border-t-transparent border-purple-500 rounded-full animate-spin">
+                    </div>
+                </div>
+                :
+                (
                 <div className="flex h-full min-h-64 items-center justify-center">
                     <div className="text-center">
                         <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-600">

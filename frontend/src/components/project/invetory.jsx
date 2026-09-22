@@ -49,7 +49,7 @@ const Inventory = () => {
             </h2>
 
             <div className="flex-1 overflow-auto dark-scrollbar -mx-1 px-1">
-                <ProjectList data={data}/>
+                <ProjectList data={data} loading={loading}/>
             </div>
         </div>
     );

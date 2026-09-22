@@ -9,10 +9,10 @@ export default function AuthPage() {
 	const [isLogin, setIsLogin] = useState(true);
 	const navigate = useNavigate();
 	const [form, setForm] = useState({
-		name: "you",
-		email: "you@gmail.com",
-		password: "1234",
-		confirmPassword: "1234"
+		name: "",
+		email: "",
+		password: "",
+		confirmPassword: ""
 	});
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");

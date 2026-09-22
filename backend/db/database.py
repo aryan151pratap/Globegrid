@@ -74,5 +74,6 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False
 )
-
+IS_AZURE = engine.dialect.name == "mssql"
+CURRENT_TIMESTAMP_SQL = "GETDATE()" if IS_AZURE else "NOW()"
 Base = declarative_base()
