@@ -192,6 +192,7 @@ const Editor = function ({user}) {
 		try{
 			const newData = {
 				id: file.path,
+				projectId: activeProject?.id,
 				name: file.name,
 				path: file.path,
 				type: file.type,
@@ -230,10 +231,6 @@ const Editor = function ({user}) {
 		}
 	}
 
-	useEffect(() => {
-		console.log(activeFile);
-	}, [activeFile])
-
 	return (
 		<div className="flex h-full w-full min-h-0 overflow-hidden
 			scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700 hover:scrollbar-thumb-zinc-600"
@@ -264,7 +261,7 @@ const Editor = function ({user}) {
 					<FileHeader 
 						files={files} openExplorer={openExplorer} setOpenExplorer={setOpenExplorer}
 						setActiveFile={setActiveFile} activeFile={activeFile} setOpenTerminal={setOpenTerminal}
-						handleReconnect={handleReconnect}
+						handleReconnect={handleReconnect} activeProject={activeProject}
 					/>
 					<WriteFile activeFile={activeFile} currentDevice={currentDevice} setFileTrigger={setFileTrigger} activeProject={activeProject}/>
 				</div>
@@ -274,6 +271,7 @@ const Editor = function ({user}) {
 						<EditorFile
 							file={activeFile}
 							onChange={handleEditorChange}
+							projectId={activeProject?.id}
 						/>
 					</div>
 					:

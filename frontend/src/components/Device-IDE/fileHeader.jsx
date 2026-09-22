@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { CiMenuBurger } from "react-icons/ci";
 import { FiRefreshCcw, FiTerminal } from "react-icons/fi";
 import { VscClose } from "react-icons/vsc";
 import { getFileIcon } from "./fileIcons";
 
-const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, setActiveFile, setOpenTerminal, handleReconnect}) {
+const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, setActiveFile, setOpenTerminal, handleReconnect, activeProject}) {
 
 	const [activesFiles, setActivesFiles] = useState([]);
-
+	
 	useEffect(() => {
 		if(!activeFile) return;
 		setActivesFiles((prev) => {
@@ -49,7 +49,7 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 							onClick={() => setActiveFile(i)}
 						>
 							{getFileIcon(i?.name, 16)}
-							{i?.name}
+							<span className={`${activeProject?.id !== i.projectId ? "italic text-zinc-400" : ""}`}>{i?.name}</span>
 							<button
 								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"
 								onClick={(e) => handleCloseTab(e, i)}

@@ -2,11 +2,13 @@ import Editor from "@monaco-editor/react";
 import { useRef, useEffect } from "react";
 import { enableAutoCloseTag, registerLinkedEditingTags } from "./autoCloseTag";
 
-export default function EditorFile({ file, onChange, fontsize = 14, lineHeight = 20 }) {
+export default function EditorFile({ file, projectId, onChange, fontsize = 14, lineHeight = 20 }) {
     const editorRef = useRef(null);
     const recentEmits = useRef([]);
-    const currentFileId = useRef(file.id);
+    const currentModelPath = useRef(`${projectId}/${file.id}`);
     const autoCloseTagDisposableRef = useRef(null);
+
+    const modelPath = `${projectId}/${file.id}`;
 
     const handleEditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
@@ -26,12 +28,12 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
 
     useEffect(() => {
         if (!editorRef.current) return;
-        if (file.id !== currentFileId.current) {
-            currentFileId.current = file.id;
+        if (modelPath !== currentModelPath.current) {
+            currentModelPath.current = modelPath;
             recentEmits.current = [];
             return;
         }
-        if (recentEmits.current.includes(file.content)) return; // echo of our own typing
+        if (recentEmits.current.includes(file.content)) return;
 
         const editor = editorRef.current;
         if (editor.getValue() !== file.content) {
@@ -44,7 +46,7 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
             );
             editor.setPosition(position);
         }
-    }, [file.content, file.id]);
+    }, [file.content, modelPath]);
 
     const handleBeforeMount = (monaco) => {
         monaco.editor.defineTheme("pure-black", {
@@ -57,6 +59,7 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
         });
         registerLinkedEditingTags(monaco);
     };
+
     return (
         <div className="min-h-0 min-w-0 h-full flex-1">
             <Editor
@@ -64,7 +67,7 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
                 theme="pure-black"
                 beforeMount={handleBeforeMount}
                 language={file.language}
-                path={file.id}
+                path={modelPath}
                 defaultValue={file.content}
                 onMount={handleEditorDidMount}
                 onChange={handleEditorChange}
@@ -88,7 +91,6 @@ export default function EditorFile({ file, onChange, fontsize = 14, lineHeight =
                     cursorBlinking: "blink",
                     smoothScrolling: true,
                     bracketPairColorization: { enabled: true },
-                    // Required for registerLinkedEditingTags() above to activate.
                     linkedEditing: true,
                     guides: {
                         indentation: true,

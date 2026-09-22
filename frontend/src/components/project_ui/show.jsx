@@ -97,7 +97,7 @@ const Show = () => {
                 </div>
             </header>
 
-            <div className="min-h-0 flex-1">
+            <div className="w-full h-full flex-1">
                 <ViewReactProject
                     files={project?.files}
                     device_id={project?.device_id}
