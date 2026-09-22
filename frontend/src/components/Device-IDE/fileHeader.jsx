@@ -51,7 +51,7 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 							{getFileIcon(i?.name, 16)}
 							<span className={`relative inset-0 ${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""} flex flex-col`}>
 								{i?.name}
-								<span className="absolute top-[12px] text-[8px] capitalize font-bold underline">{activeProject?.id !== i.projectId && activeProject?.name}</span>
+								<span className="absolute top-[12px] text-[8px] capitalize font-bold underline">{i?.origin === "device" ? "device_explorer" : activeProject?.id && activeProject?.name}</span>
 							</span>
 							<button
 								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"

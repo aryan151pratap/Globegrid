@@ -164,7 +164,7 @@ class Manager:
 		}
 
 	async def file_operation(self, response, client):
-		print(response)
+		# print(response)
 		type = response.get("type")
 		operation = response.get("operation")
 		request_id = response.get("request_id")
