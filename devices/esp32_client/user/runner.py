@@ -1,31 +1,7 @@
 from services.device import send_json, receive_json
 import uasyncio as asyncio
 import blink
-from calculator import Calculator
-
-cal = Calculator()
-functions = cal.get_functions()
-
-
-def execute(data):
-    if data is None:
-        return "data not found"
-
-    cmd = data.get("cmd")
-    values = data.get("values", [])
-
-    if cmd not in functions:
-        return "Unknown command"
-
-    func, required = functions[cmd]
-
-    if required != -1 and len(values) != required:
-        return "Expected " + str(required) + " values"
-
-    try:
-        return func(*values)
-    except Exception as e:
-        return "Error: " + str(e)
+from sample import sample_sender
 
 
 async def safe_send(payload):
@@ -34,12 +10,6 @@ async def safe_send(payload):
         await send_json(payload)
     except Exception as e:
         print("Send error:", e)
-
-
-async def sender():
-    await safe_send({
-        "message": "calaulator"
-    })
 
 
 async def receiver():
@@ -75,13 +45,6 @@ async def receiver():
                     "led": value
                 })
 
-            elif cmd in functions:
-                result = execute(payload)
-                await safe_send({
-                    "cmd": cmd,
-                    "result": result
-                })
-
             else:
                 await safe_send({
                     "cmd": cmd,
@@ -97,7 +60,7 @@ async def receiver():
 
 
 async def main():
-    sender_task = asyncio.create_task(sender())
+    sender_task = asyncio.create_task(sample_sender())
     receiver_task = asyncio.create_task(receiver())
 
     try:
