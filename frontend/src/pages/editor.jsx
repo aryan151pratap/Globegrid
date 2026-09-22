@@ -35,12 +35,16 @@ const Editor = function ({user}) {
 	const [fileTrigger, setFileTrigger] = useState(0);
 	const [output, setOutput] = useState([]);
 
+
+	const [loading, setLoading] = useState(false);
+
 	const terminalRef = useRef(null);
 	const [terminalHeight, setTerminalHeight] = useState(250);
 	const notify = useNotify();
 
 	const getIotFiles = async function(path="", operation="list_folder", type="filesystem"){
 		try {
+			setLoading(true);
 			const data = {
 				type,
 				device_id: currentDevice,
@@ -100,6 +104,7 @@ const Editor = function ({user}) {
 						setTrigger(e => e+1);
 					}
 					else if(type == "filesystem"){
+						setLoading(false);
 						const operation = data.operation;
 						if(operation == "list_folder") setFiles(data.data);
 						else if (operation === "read_file") {
@@ -248,6 +253,7 @@ const Editor = function ({user}) {
 						trigger={trigger}
 						onLoadFolder={LoadFolders}
 						setFileTrigger={setFileTrigger}
+						deviceLoading={loading}
 
 						handleCodeFileSelect={handleCodeFileSelect}
 						activeProject={activeProject}

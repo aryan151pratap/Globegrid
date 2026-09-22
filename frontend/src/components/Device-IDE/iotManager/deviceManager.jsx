@@ -11,7 +11,8 @@ export default function DeviceManager({
 	onFileSelect,
 	onLoadFolder,
 	setFileTrigger,
-	currentDevice
+	currentDevice,
+	deviceLoading
 }) {
 	const [currentFolder, setCurrentFolder] = useState("/");
 	const [createFile, setCreateFile] = useState(false);
@@ -65,18 +66,21 @@ export default function DeviceManager({
 					))}
 				</div>
 			)}
-			<div className="w-full flex bg-zinc-500/20 px-2 p-1">
-				<div className="ml-auto flex flex-row gap-1 items-center text-zinc-400">
+			<div className="px-2 p-1 bg-[#CEF144]/90 flex flex-row items-center justify-between text-black">
+				<div className="text-xs">
+					<span>Device Explorer</span>
+				</div>
+				<div className="ml-auto flex flex-row gap-1 items-center text-black/90">
 					<button
 						title="New File"
-						className="rounded hover:text-zinc-200 cursor-pointer"
+						className="rounded hover:text-zinc-700 cursor-pointer"
 						onClick={() => handleEntryType("file")}
 					>
 						<VscNewFile size={15}/>
 					</button>
 					<button
 						title="New Folder"
-						className="rounded hover:text-zinc-200 cursor-pointer"
+						className="rounded hover:text-zinc-700 cursor-pointer"
 						onClick={() => handleEntryType("folder")}
 					>
 						<VscNewFolder size={15}/>
@@ -90,7 +94,7 @@ export default function DeviceManager({
 						value={input}
 						placeholder="Enter file name..."
 						onChange={(e) => setInput(e.target.value)}
-						className="w-fit min-w-0 px-2 p-0.5 outline-none placeholder:text-zinc-500 bg-zinc-900 text-xs border border-zinc-500/20 focus:border-purple-500/80"
+						className="w-fit min-w-0 px-2 p-0.5 outline-none placeholder:text-zinc-500 bg-zinc-900 text-xs border border-zinc-500/20 focus:border-[#CEF144]/80"
 					/>
 					<div className="flex items-center px-1 ml-auto">
 						<select
@@ -110,6 +114,17 @@ export default function DeviceManager({
 					</button>
 				</div>
 			)}
+			
+			{deviceLoading ?
+				<div className="px-2 p-1">
+					<span className="text-zinc-400 capitalize text-xs">loading...</span>
+				</div>
+				:
+				!files || files.length === 0 &&
+				<div className="text-[12px] text-white/80 px-1 p-2">
+					<span className="bg-purple-500/50 px-2 p-1">No files</span>
+				</div>
+			}
 
 			<div className="flex-1 min-h-0 overflow-y-auto dark-scrollbar">
 				<FileManager

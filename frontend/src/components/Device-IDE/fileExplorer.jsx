@@ -19,6 +19,7 @@ export default function FileExplorer({
 	trigger,
 	onLoadFolder,
 	setFileTrigger,
+	deviceLoading,
 
 	handleCodeFileSelect,
 	activeProject,
@@ -72,6 +73,7 @@ export default function FileExplorer({
 					onLoadFolder={onLoadFolder}
 					setFileTrigger={setFileTrigger}
 					currentDevice={currentDevice}
+					deviceLoading={deviceLoading}
 				/>
 			)
 		},

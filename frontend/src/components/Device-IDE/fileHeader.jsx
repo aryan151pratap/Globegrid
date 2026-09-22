@@ -49,7 +49,10 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 							onClick={() => setActiveFile(i)}
 						>
 							{getFileIcon(i?.name, 16)}
-							<span className={`${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""}`}>{i?.name}</span>
+							<span className={`relative inset-0 ${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""} flex flex-col`}>
+								{i?.name}
+								<span className="absolute top-[12px] text-[8px] capitalize font-bold underline">{activeProject?.id !== i.projectId && activeProject?.name}</span>
+							</span>
 							<button
 								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"
 								onClick={(e) => handleCloseTab(e, i)}

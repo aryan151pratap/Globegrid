@@ -168,11 +168,5 @@ export default function FileManager({
 		);
 	};
 
-	if (!files || files.length === 0) {
-		return <div className="text-[12px] text-white/80 px-1 p-2">
-			<span className="bg-purple-500/50 px-2 p-1">No files</span>
-		</div>;
-	}
-
 	return <div className="py-1">{sortEntries(files).map((node) => renderNode(node, "/", 0))}</div>;
 }
