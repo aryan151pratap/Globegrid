@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { VscChevronRight, VscRefresh } from "react-icons/vsc";
+import { VscChevronRight, VscFileSymlinkDirectory, VscNewFile, VscNewFolder, VscRefresh } from "react-icons/vsc";
 import FileManager from "./fileManager";
 import { useNotify } from "../notify";
 import { handleCreateDeviceFile, handleDeleteDeviceFile } from "../../../hooks/fileHandle";
@@ -47,7 +47,10 @@ export default function DeviceManager({
 			notify({ type: "error", message: err.message });
 		}
 	};
-
+	const handleEntryType = function(type){
+		setEntry_type(type);
+		setCreateFile(true);
+	}
 	return (
 		<div className="flex-1 min-h-0 flex flex-col">
 			{currentFolder && (
@@ -62,6 +65,24 @@ export default function DeviceManager({
 					))}
 				</div>
 			)}
+			<div className="w-full flex bg-zinc-500/20 px-2 p-1">
+				<div className="ml-auto flex flex-row gap-1 items-center text-zinc-400">
+					<button
+						title="New File"
+						className="rounded hover:text-zinc-200 cursor-pointer"
+						onClick={() => handleEntryType("file")}
+					>
+						<VscNewFile size={15}/>
+					</button>
+					<button
+						title="New Folder"
+						className="rounded hover:text-zinc-200 cursor-pointer"
+						onClick={() => handleEntryType("folder")}
+					>
+						<VscNewFolder size={15}/>
+					</button>
+				</div>
+			</div>
 			{createFile && (
 				<div className="w-full items-center shrink-0 flex flex-row bg-zinc-500/10 p-1">
 					<input
