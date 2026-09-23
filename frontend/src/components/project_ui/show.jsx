@@ -54,7 +54,7 @@ const Show = () => {
         }
     };
 
-    if (!project && !loading) {
+    if (!loading && !project) {
         return (
             <div className="h-screen w-screen flex items-center justify-center bg-black text-gray-400">
                 <div className="flex flex-col items-center">

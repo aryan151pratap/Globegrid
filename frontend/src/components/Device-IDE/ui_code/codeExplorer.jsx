@@ -3,8 +3,6 @@ import UIFileExplorer from "./fodler_files";
 import { useEffect, useState } from "react";
 import { delete_file, delete_project, get_project, get_template, list_projects, save_file, save_project, update_project } from "../../../hooks/projectHandle";
 import { useNotify } from "../notify";
-import { sample_projects } from "../../project_ui/data";
-import { FaTimes } from "react-icons/fa";
 import { EditProject } from "./editProject";
 
 const array_of_files = function(data){
@@ -16,6 +14,15 @@ const array_of_files = function(data){
 	}));
 	return {...data, files: fileArray};
 }
+
+const filesObject = (files) => {
+    return Object.fromEntries(
+        files.map(file => [
+            file.path,
+            file.type === "folder" ? null : file.content
+        ])
+    );
+};
 
 const CodeExplorer = function({files, activeFile, onFileClick, activeProject, setActiveProject, devices}){
 	const [trigger, setTrigger] = useState(0);
@@ -65,8 +72,6 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 		handleProjectDivClose();
 	}
 
-	const displayProjects = projectList.length > 0 ? projectList : sample_projects;
-
 	const handleAddFile = function(){
 		setInputType({type: "file", value: ""});
 	}
@@ -106,16 +111,20 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 
 	const handleSaveProject = async function(){
 		if(!activeProject) return;
+		console.log(activeProject);
 		try{
 			setLoading({read_project_list: true});
 			if(!activeProject?.id) {
 				notify({type: "warning", message: "project id not found"});
 				return;
 			}
-			const res = await update_project(activeProject, activeProject);
+			const data = {...activeProject, files: filesObject(activeProject?.files)}
+			const res = await update_project(activeProject?.id, data);
 			if(res) notify({type: "status", message: res.message});
 		} catch (err) {
 			notify({type: "error", message: err});
+		} finally {
+			setLoading(null);
 		}
 	} 
 
@@ -316,7 +325,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 					</div>
 					
 					<div className="max-h-[140px] bg-zinc-900/20 h-fit min-h-0 overflow-auto dark-scrollbar">
-						{displayProjects?.map((i, index) => (
+						{projectList?.map((i, index) => (
 							<div key={i?.id ?? index} className="bg-zinc-600/10 text-zinc-400 hover:bg-zinc-500/20 hover:text-white hover:border-zinc-500/50 hover:border-t hover:border-b border-b border-t border-zinc-900/0 border-t-zinc-800/50 cursor-pointer"
 								onClick={() => get_project_files(i)}
 							>

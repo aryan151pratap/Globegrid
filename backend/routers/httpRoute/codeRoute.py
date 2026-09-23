@@ -104,7 +104,7 @@ async def update_code(project_id: int, payload: ProjectUpdate, request: Request)
 
     code_service.update_code(
         project_id=project_id,
-        user_id=user.user_id,
+        user_id=user.get("user_id"),
         name=payload.name,
         description=payload.description,
         files=payload.files,
