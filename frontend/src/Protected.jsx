@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { me } from "./services/authService";
 import { useAuth } from "./AuthContext";
 import { useNotify } from "./components/Device-IDE/notify";
+import { PageLoading } from "./pageLoading";
 
 export default function ProtectedRoute() {
 
@@ -42,7 +43,7 @@ export default function ProtectedRoute() {
         }
     }
     if (loading) {
-        return <div>Loading...</div>;
+        return <PageLoading/>;
     }
     if (!authenticated) {
         return (
