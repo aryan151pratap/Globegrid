@@ -168,16 +168,27 @@ export default function Sample() {
 				}
 			}, indent=2),
         "/useEsp.js": """
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 export function useEsp() {
-    const [data, setData] = useState(null);      // latest message from the device
-    const [history, setHistory] = useState([]);  // last 50 messages, newest last
+    const [data, setData] = useState(null);
+    const [history, setHistory] = useState([]);
+    const [latency, setLatency] = useState(null); // ms, last round-trip time
+
+    const pendingSentAt = useRef(null);
 
     useEffect(() => {
         const onMsg = (e) => {
             const m = e.data;
             if (m?.source !== "esp-bridge" || m.type !== "runner_data") return;
+
+            // if there's a pending send, compute RTT
+            if (pendingSentAt.current !== null) {
+                const rtt = performance.now() - pendingSentAt.current;
+                setLatency(rtt);
+                pendingSentAt.current = null;
+            }
+
             setData(m.data);
             setHistory((prev) => [...prev.slice(-49), m.data]);
         };
@@ -187,10 +198,11 @@ export function useEsp() {
     }, []);
 
     const send = useCallback((payload) => {
+        pendingSentAt.current = performance.now();
         window.parent.postMessage({ source: "esp-bridge", type: "runner", data: payload }, "*");
     }, []);
 
-    return { data, history, send };
+    return { data, history, send, latency };
 }
 """,
 "/main.jsx": """
