@@ -50,3 +50,12 @@ export const get_user_details = async () => {
 		throw error;
 	}
 };
+
+export const logout = async () => {
+	try {
+		const response = await API.post("/logout");
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};

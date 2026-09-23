@@ -1,7 +1,18 @@
 import { CiMenuBurger, CiMicrochip } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import { logout } from "../services/authService";
 
 const Header = function({setShowSideBar, user}){
+
+	const handleLogout = async function(){
+		try{
+			const res = await logout();
+			if(res.message) window.location.reload();
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
 	return(
 		<div className="w-full bg-black flex border-b border-zinc-800">
 
@@ -25,7 +36,11 @@ const Header = function({setShowSideBar, user}){
 				<div className="text-white text-lg font-bold">IoT Dashboard</div>
 				<div className="text-sm flex items-center gap-2">
 					<Link to={"/profile"} className="text-white bg-zinc-500/40 text-zinc-300 hover:bg-purple-500/80 hover:text-white px-2 p-1">Profile</Link>
-					<button className="text-white bg-zinc-500/40 text-zinc-300 px-2 p-1 hover:bg-white hover:text-black">Logout</button>
+					<button className="text-white bg-zinc-500/40 text-zinc-300 px-2 p-1 hover:bg-white hover:text-black"
+						onClick={() => handleLogout()}
+					>
+						Logout
+					</button>
 				</div>
 			</div>
 			<div className=""></div>

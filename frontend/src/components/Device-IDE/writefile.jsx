@@ -64,6 +64,7 @@ const WriteFile = function ({ activeFile, currentDevice, setFileTrigger, activeP
 	const saveProjectFile = async function(){
 		try{
 			if(!activeProject?.id) return;
+			else if(activeProject?.id !== activeFile?.projectId) return notify({type: "warning", message: `${activeFile?.name} not from ${activeProject?.name}`});
 			const res = await save_file(activeProject?.id, activeFile);
 			if(!res) notify({type: "error", message: "saving failed"}); 
 			notify({type: "status", message: res.message});
