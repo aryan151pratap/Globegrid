@@ -96,7 +96,7 @@ const AgentInput = ({ value, onChange, onSend, connected, models, connectionStat
 							details={details}
 						/>
 						{details &&
-						<div className="text-xs flex flex-wrap gap-1">
+						<div className="text-[10px] flex flex-wrap gap-1">
 							<span className={`${showDetails ? "bg-purple-500/15" : "bg-zinc-500/20"} capitalize px-2 p-1 hover:text-white hover:bg-purple-500/20 cursor-pointer rounded`}
 								onClick={() => setShowDetails(e => !e)}
 							>

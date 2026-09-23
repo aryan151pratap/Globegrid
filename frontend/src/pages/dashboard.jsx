@@ -50,17 +50,14 @@ const Dashboard = () => {
                 <div className="h-full w-0.5 rounded-md group-hover:bg-orange-500/70" />
             </div>
 
-            {/* <div
+            <div
                 className="h-full flex flex-col rounded-md"
                 style={{ width: `${agentWidth}px` }}
             >
-                <div className="h-2 bg-[#0d0d0f]"></div>
-                <div className="h-full border border-zinc-900 rounded-md overflow-hidden">
+                <div className="h-full border-l border-zinc-900 overflow-hidden">
                     <Agent />
                 </div>
-                <div className="h-2 bg-[#0d0d0f]"></div>
             </div>
-            <div className="w-2 h-full bg-[#0d0d0f]"></div> */}
         </div>
     );
 };

@@ -13,19 +13,13 @@ const handleCopy = async (code, notify) => {
 	}
 };
 
-const ChatContainer = ({ messages, data }) => {
-	const chatRef = useRef(null);
-	useEffect(() => {
-		const container = chatRef.current;
 
-		if (container) {
-			container.scrollTop = container.scrollHeight;
-		}
-	}, [messages]);
+const ChatContainer = ({ messages, data }) => {
+	const {ref: chatRef, handleScroll} = useAutoScroll(messages);
 	
 	return (
 		//ref={chatRef}
-		<div ref={chatRef} className="h-fit min-h-0 w-full min-w-0 flex-1 overflow-auto hide-scrollbar px-4 py-5">
+		<div ref={chatRef} onScroll={handleScroll} className="h-fit min-h-0 w-full min-w-0 flex-1 overflow-auto hide-scrollbar px-4 py-5">
 			<div className="max-w-3xl mx-auto flex flex-col overflow-auto dark-scrollbar">
 				{messages.length === 0 ? (
 					<div className="flex flex-1 items-center justify-center py-20 text-center">
@@ -96,4 +90,31 @@ const ChatType = ({ message, data }) => {
 			</div>
 		</div>
 	);
+};
+
+const useAutoScroll = (dependency) => {
+	const ref = useRef(null);
+	const [autoScroll, setAutoScroll] = useState(true);
+
+	const handleScroll = () => {
+		if (!ref.current) return;
+
+		const distance =
+			ref.current.scrollHeight -
+			ref.current.scrollTop -
+			ref.current.clientHeight;
+
+		setAutoScroll(distance < 20);
+	};
+
+	useEffect(() => {
+		if (!ref.current || !autoScroll) return;
+
+		ref.current.scrollTop = ref.current.scrollHeight;
+	}, [dependency, autoScroll]);
+
+	return {
+		ref,
+		handleScroll,
+	};
 };
