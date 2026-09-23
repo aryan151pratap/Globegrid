@@ -35,7 +35,6 @@ const Devices = function(){
 		try {
 			setScanning(true);
 			const data = await getDevices();
-			console.log(data);
 			if (data) setDevices(data?.devices);
 		} catch (err) {
 			console.log(err);

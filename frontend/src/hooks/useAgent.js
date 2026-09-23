@@ -49,7 +49,6 @@ export const useAgent = () => {
     }
 
     const handleAgentMessage = useCallback((data) => {
-        console.log("Agent response:", data);
         const type = data.type;
         if (data.type === "file_changed") {
             addFileChange({

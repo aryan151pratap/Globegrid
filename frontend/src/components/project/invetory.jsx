@@ -19,7 +19,6 @@ const Inventory = () => {
         try{
             setLoading(true);
             const list = await all_projects_files();
-            console.log(list);
             if(list){
                 setData(list);
             } else {

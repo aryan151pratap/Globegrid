@@ -26,7 +26,6 @@ export function connectAgent(onMessage, onConnectionChange) {
 }
 
 export function sendToAgent(data) {
-    console.log("Sending to agent:", data);
     agentSocket.send(data);
 }
 

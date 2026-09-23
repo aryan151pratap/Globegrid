@@ -52,7 +52,6 @@ const Editor = function ({user}) {
 				path,
 			};
 			sendToBackend(data);
-			console.log(data);
 		} catch (err) {
 			notify({type: "error", message: err.message});
 		}
@@ -74,7 +73,6 @@ const Editor = function ({user}) {
 				if(!currentDevice) return;
 				notify({type: "status", message: `${currentDevice} connecting....`});
 				const data = await getconnection(currentDevice);
-				console.log("data -------->    ", data);
 				if(data.status == "online"){
 					notify({type: "status", message: `${data?.name} ${data?.status} connected`});
 					setIotConn(data);
@@ -96,7 +94,6 @@ const Editor = function ({user}) {
 			setBackend(null);
 			connectDashboard(
 				(data) => {
-					console.log("Terminal stream:", data);
 					const type = data.type;
 					if(type == "terminal") setTerminal((prev) => [...prev, data]);
 					else if(type == "IOT") {
