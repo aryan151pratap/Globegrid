@@ -4,7 +4,7 @@ import { VscEdit, VscCheck, VscClose } from "react-icons/vsc";
 import { update_project_details } from "../../../hooks/projectHandle";
 import { useNotify } from "../notify";
 
-export function EditProject({project, setOpenEdit, projectList, setTrigger, devices, handleGetTemplate, del_project}) {
+export function EditProject({project, setOpenEdit, projectList, setTrigger, devices, handleGetTemplate, del_project, get_project_files}) {
 	const [addProject, setAddProject] = useState(false);
 	const [currentProject, setCurrentProject] = useState(null);
 	const [projectName, setProjectName] = useState("");
@@ -25,6 +25,14 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 		}
 	}
 	
+	const handleSelectProject = async function(){
+		try{
+			get_project_files(currentProject);
+			setOpenEdit(false);
+		} catch (err) {
+			console.log(err);
+		}
+	}
 	
 	return(
 		<div className="fixed z-[9999] inset-0 w-full h-full bg-zinc-500/10 backdrop-blur-sm flex flex-col items-center justify-center">
@@ -102,7 +110,9 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 							</div>
 
 							<div className="w-full mt-auto border-t border-zinc-800 flex flex-row">
-								<button className="flex flex-row items-center gap-1 border-r border-zinc-800 hover:bg-zinc-500/20 px-2 p-1 bg-zinc-500/10">
+								<button className="flex flex-row items-center gap-1 border-r border-zinc-800 hover:bg-zinc-500/20 px-2 p-1 bg-zinc-500/10"
+									onClick={() => handleSelectProject()}
+								>
 									open
 									<VscArrowRight/>
 								</button>

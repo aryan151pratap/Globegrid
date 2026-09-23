@@ -45,13 +45,13 @@ const FileHeader = function ({files, openExplorer, setOpenExplorer, activeFile, 
 				{activesFiles.length > 0 &&
 				<div className="h-full items-center flex flex-row text-white text-sm text-zinc-200 overflow-auto hide-scrollbar">
 					{activesFiles.map((i, index) => (
-						<div key={index} className={`h-full items-center flex gap-2 px-2 cursor-pointer ${activeFile?.name == i.name ? "bg-zinc-800/50" : "hover:bg-zinc-400/20 border-r border-zinc-800 text-zinc-400 hover:text-white"}`}
+						<div key={index} className={`relative inset-0 h-full items-center flex gap-2 px-2 cursor-pointer ${activeFile?.name == i.name ? "bg-zinc-800/50" : "hover:bg-zinc-400/20 border-r border-zinc-800 text-zinc-400 hover:text-white"}`}
 							onClick={() => setActiveFile(i)}
 						>
 							{getFileIcon(i?.name, 16)}
-							<span className={`relative inset-0 ${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""} flex flex-col`}>
-								{i?.name}
-								<span className="absolute top-[12px] text-[8px] capitalize font-bold underline">{i?.origin === "device" ? "device_explorer" : activeProject?.id && activeProject?.name}</span>
+							<span className={`${activeProject?.id !== i.projectId && i?.origin == "project" ? "italic text-zinc-400" : ""} flex flex-col`}>
+								<span className="text-[13px]">{i?.name}</span>
+								<span className="absolute top-[19px] text-[8px] capitalize font-semibold underline">{i?.origin === "device" ? "device_explorer" : activeProject?.id && activeProject?.name}</span>
 							</span>
 							<button
 								className="font-thin cursor-pointer hover:bg-zinc-500/20 p-1"

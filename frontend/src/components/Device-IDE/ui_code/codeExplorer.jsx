@@ -236,7 +236,15 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 			}
 			{openEdit &&
 			<div>
-				<EditProject project={activeProject} setOpenEdit={setOpenEdit} projectList={projectList} setTrigger={setTrigger} devices={devices} handleGetTemplate={handleGetTemplate} del_project={del_project}/>
+				<EditProject project={activeProject} 
+					setOpenEdit={setOpenEdit} 
+					projectList={projectList} 
+					setTrigger={setTrigger} 
+					devices={devices} 
+					handleGetTemplate={handleGetTemplate} 
+					del_project={del_project}
+					get_project_files={get_project_files}
+				/>
 			</div>
 			}
 			<div className="bg-[#CEF144]/90 flex flex-row items-center justify-between text-black">
