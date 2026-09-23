@@ -236,6 +236,18 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 	}
 	return(
 		<div className="w-full h-full flex flex-col border border-zinc-800 rounded-md overflow-hidden">
+			<div className="w-full h-fit border-b border-zinc-800/60 p-1 text-xs font-inter flex flex-row gap-1 text-white overflow-auto dark-scrollbar">
+				{activeFile?.path &&
+				<div className="p-1 bg-zinc-500/20 px-2 text-zinc-400 flex items-center hover:text-zinc-200">
+					<span>{activeFile?.path}</span>
+				</div>
+				}
+				{message &&
+				<div className="px-2 p-1 flex items-center bg-zinc-500/20 text-zinc-400">
+					<span className="line-clamp-1">{message}</span>
+				</div>
+				}
+			</div>
 			{output?.length > 0 ? (
 				<div ref={outputRef} onScroll={handleScroll} className="h-full overflow-auto dark-scrollbar p-2 pb-8 flex flex-col gap-1">
 					{output.map((item, index) => (
@@ -285,16 +297,7 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 					>
 						stop
 					</button>
-					{activeFile?.path &&
-					<div className="bg-zinc-500/20 px-2 text-zinc-400 flex items-center hover:text-zinc-200">
-						<span>{activeFile?.path}</span>
-					</div>
-					}
-					{message &&
-					<div className="px-2 flex items-center bg-zinc-500/20 text-zinc-400">
-						<span className="line-clamp-1">{message}</span>
-					</div>
-					}
+					
 					<button className="ml-auto text-white bg-zinc-500/20 px-2 p-0.5 hover:bg-purple-600/60 cursor-pointer"
 						onClick={() => setOutput([])}
 					>

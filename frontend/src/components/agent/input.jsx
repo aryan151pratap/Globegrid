@@ -66,12 +66,12 @@ const AgentInput = ({ value, onChange, onSend, connected, models, connectionStat
 					className="w-full flex resize-none bg-transparent px-2 py-2 text-sm text-zinc-200 outline-none placeholder:text-zinc-600 hide-scrollbar"
 				/>
 				<div className="w-full flex flex-row items-center">
-					<button
+					{/* <button
 						className="mb-1 rounded-md p-2 text-zinc-500 transition hover:bg-zinc-500/10 hover:text-zinc-400"
 						title="Attach"
 					>
 						<FiPaperclip size={17} />
-					</button>
+					</button> */}
 					
 					<div className="flex flex-wrap gap-1 items-center px-4 overflow-auto hide-scrollbar mr-2">
 						<div className={`flex flex-row gap-1 justify-center capitalize text-[10px] px-2 p-1 rounded ${connected ? "text-green-400 bg-green-500/20" : "text-red-500 bg-red-400/10"}`}>
@@ -87,15 +87,15 @@ const AgentInput = ({ value, onChange, onSend, connected, models, connectionStat
 						{/* <div className="ml-2 text-xs text-zinc-500">
 							{device_connection ? `Connected to: ${device_connection}` : "No device connected"}
 							</div> */}
-						<ModelSelector
+						{/* <ModelSelector
 							showModels={showModels}
 							setShowModels={setShowModels}
 							current_model={current_model}
 							models={models}
 							handleSelectModel={handleSelectModel}
 							details={details}
-						/>
-						{details &&
+						/> */}
+						{details && false &&
 						<div className="text-[10px] flex flex-wrap gap-1">
 							<span className={`${showDetails ? "bg-purple-500/15" : "bg-zinc-500/20"} capitalize px-2 p-1 hover:text-white hover:bg-purple-500/20 cursor-pointer rounded`}
 								onClick={() => setShowDetails(e => !e)}
