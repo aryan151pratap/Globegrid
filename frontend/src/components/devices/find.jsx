@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
 const Find = ({devices, addingId, setAddingId}) => {
-	
+	const { user } = useOutletContext();
 	const [addedIds, setAddedIds] = useState(new Set());
 
 	return (
@@ -21,7 +22,7 @@ const Find = ({devices, addingId, setAddingId}) => {
 									<p className="truncate text-sm font-medium text-zinc-100">{d.name || "Unknown device"}</p>
 									<p className="truncate font-mono text-xs text-zinc-500">{d.device_id}</p>
 									{d.user_id && 
-										<span className="text-xs flex gap-1 text-orange-500/60">added to another user 
+										<span className="text-xs flex gap-1 text-orange-500/60">{user.id == d.user_id ? "already added" : "added to another user"} 
 											<span className="bg-cyan-500/20 rounded text-cyan-500 font-mono px-2 ">ID-{d.user_id}</span>
 										</span>
 									}

@@ -14,11 +14,14 @@ import {
     useAgentContext
 } from "./agentContext";
 import { agent_model_list } from "../../hooks/agentHandle";
+import Settings from "./setting";
 
 const AgentContent = () => {
     const [input, setInput] = useState("");
     const [device_connection, setDeviceConnection] = useState(false);
 	const [fileDirection, setFileDirection] = useState(false);
+    const [showModels, setShowModels] = useState(false);
+    const [current_model, setCurrent_model] = useState("");
     const {codePreview, setCodePreview, showCodePreview, setShowCodePreview} = useAgentContext();
     const {messages, setMessages, connected, connectionStatus, models, details} = useAgent();
 
@@ -51,6 +54,20 @@ const AgentContent = () => {
         setDeviceConnection(deviceId || null);
     };
 
+    useEffect(() => {
+		setCurrent_model(models?.default);
+	}, [models])
+
+    const handleSelectModel = function(i){
+		if(!connected) return;
+		sendToAgent({
+			type: "change_model",
+			model: i
+		})
+		setCurrent_model(i);
+		setShowModels(false);
+	}
+
     return (
         <div
             className={`relative ${
@@ -58,6 +75,17 @@ const AgentContent = () => {
             } font-inter w-full flex h-full border-zinc-800 bg-[#0d0d0f] text-zinc-200 overflow-auto dark-scrollbar`}
         >
             <AgentBackground />
+
+            <div>
+                <Settings
+                    showSettings={showModels}
+                    setShowSettings={setShowModels}
+                    current_model={current_model}
+                    models={models}
+                    handleSelectModel={handleSelectModel}
+                    details={details}
+                />
+            </div>
 
             <div className={`${showCodePreview ? "md:flex hidden" : "flex"} relative h-full w-full min-h-0 flex flex-col overflow-visible`}>
                 <AgentHeader
@@ -67,7 +95,7 @@ const AgentContent = () => {
                     showCodePreview={fileDirection}
                     setShowCodePreview={setFileDirection}
                     details={details}
-                    device_connection={device_connection}
+                    setShowModels={setShowModels}
                     
                 />
 
@@ -82,10 +110,8 @@ const AgentContent = () => {
                         onChange={setInput}
                         onSend={handleSend}
                         connected={connected}
-                        models={models}
                         connectionStatus={connectionStatus}
-                        device_connection={device_connection}
-                        details={details}
+                        current_model={current_model}
                     />
                 </div>
 

@@ -57,3 +57,33 @@ export const getFolder = async (deviceId, path) => {
 		throw err;
 	}
 }
+
+export async function ScanDeviceWifi(deviceId) {
+	try {
+		const res = await API.get(`device/wifiScan/${deviceId}`);
+		if(res) return res.data;
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function ConnectDeviceWifi(deviceId, ssid, password) {
+	try {
+		const res = await API.post(`device/wifiConnect/${deviceId}`, {
+			ssid, password
+		});
+		if(res) return res.data;
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function GetWifiStatus(deviceId) {
+	try {
+		const res = await API.get(`device/wifiStatus/${deviceId}`);
+		console.log(res);
+		if(res) return res.data;
+	} catch (err) {
+		throw err;
+	}
+}

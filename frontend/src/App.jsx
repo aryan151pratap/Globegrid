@@ -6,7 +6,6 @@ import Devices from './components/devices/device.jsx';
 import ProtectedLayout from './ProtectedLayout.jsx';
 import NotifyProvider from './components/Device-IDE/notify.jsx';
 import { Router } from 'lucide-react';
-import MonitorDash from './pages/monitor.jsx';
 import Landing from './components/landing/landing.jsx';
 import Agent from './components/agent/agent.jsx';
 import CarController from './pages/carController.jsx';
@@ -15,6 +14,7 @@ import AuthPage from './pages/login.jsx';
 import Profile from './components/profile/profile.jsx';
 import Inventory from './components/project/invetory.jsx';
 import Show from './components/project_ui/show.jsx';
+import Setting from './setting/setting.jsx';
 
 export default function App() {
   return (
@@ -27,9 +27,8 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />}/>
               <Route path="/devices" element={<Devices />}/>
               <Route path="/codePreview" element={<HtmlPreview />}/>
-              <Route path="/commands" element={<MonitorDash/>} />
               <Route path="/agent" element={<Agent/>} />
-              <Route path="/settings" element={<CarController/>}/>
+              <Route path="/settings" element={<Setting/>}/>
               <Route path="/profile" element={<Profile/>}></Route>
               <Route path="/inventory" element={<Inventory/>}></Route>
             </Route>

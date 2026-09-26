@@ -4,7 +4,7 @@ import { FaCode } from "react-icons/fa";
 import { VscCode, VscLayoutPanelDock, VscLayoutSidebarRightDock } from "react-icons/vsc";
 import ConnectDevice from "./connectDevice";
 
-const AgentHeader = ({ onClear, codePreview, setCodePreview, showCodePreview, setShowCodePreview, details, device_connection }) => {
+const AgentHeader = ({ onClear, codePreview, setCodePreview, showCodePreview, setShowCodePreview, details, setShowModels }) => {
 	const [connectDevices, setConnectDevices] = useState(false);
 
 	return (
@@ -52,6 +52,7 @@ const AgentHeader = ({ onClear, codePreview, setCodePreview, showCodePreview, se
 				<button
 					className="rounded-md p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-200"
 					title="More"
+					onClick={() => setShowModels((e) => !e)}
 				>
 					<FiMoreHorizontal size={16} />
 				</button>

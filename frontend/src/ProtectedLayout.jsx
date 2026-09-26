@@ -33,7 +33,7 @@ export default function ProtectedLayout() {
                     <SideBar user={user}/>
                 </aside>
                 <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
-                    <Outlet />
+                    <Outlet context={{user}}/>
                 </main>
             </div>
         </div>

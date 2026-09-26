@@ -60,6 +60,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 		fetchProjectList();
 	}, [trigger])
 
+
 	const handleRefresh = function(){
 		if(!activeProject) return;
 		console.log(activeProject);

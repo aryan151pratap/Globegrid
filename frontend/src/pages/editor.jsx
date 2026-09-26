@@ -94,6 +94,7 @@ const Editor = function ({user}) {
 			setBackend(null);
 			connectDashboard(
 				(data) => {
+					console.log("editor data ", data);
 					const type = data.type;
 					if(type == "terminal") setTerminal((prev) => [...prev, data]);
 					else if(type == "IOT") {
@@ -166,7 +167,6 @@ const Editor = function ({user}) {
 	const handleFileSelect = (file) => {
 		try{
 			const data = fileData[file.path];
-			console.log("data", data);
 			if(!data){
 				getIotFiles(file.path, "read_file");
 				notify({type: "status", message: `${file.name} fetching...`});

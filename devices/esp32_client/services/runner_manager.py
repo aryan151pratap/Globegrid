@@ -75,7 +75,7 @@ class RunnerManager:
 
         try:
             device.init(self.client)
-            print(module_name)
+            print("module name ", module_name)
             for name in self._list_user_files():
                 if name in sys.modules:
                     del sys.modules[name]

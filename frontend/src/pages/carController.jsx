@@ -1,29 +1,3 @@
-/**
- * CarController.jsx
- * ---------------------------------------------------------------------------
- * Control UI for an ESP32-based RC car over WebSocket.
- *
- * PROTOCOL (adjust to match your firmware — see the two spots marked below)
- * - D-Pad mode sends classic single-letter commands, the pattern used by
- *   most ESP32 car tutorials: "F:<speed>" / "B:<speed>" / "L:<speed>" /
- *   "R:<speed>" while held, "S" on release. Lights: "H1"/"H0". Horn:
- *   "K1"/"K0" (held down / released).
- * - Joystick mode sends continuous JSON motor-mixed speeds instead:
- *   { left, right } each in [-maxSpeed, maxSpeed], using standard
- *   arcade-drive mixing (left = y+x, right = y-x).
- * - Emergency stop fires both, so it works regardless of which mode / your
- *   firmware's exact parser expects.
- *
- * CONNECTION
- * Connects to ws://<ip>:<wsPort>/ — defaults to 192.168.4.1:81, the usual
- * ESP32 SoftAP + WebSocketsServer default. Auto-reconnects every 2s while
- * disconnected.
- *
- * USAGE
- *   <CarController defaultIp="192.168.4.1" wsPort={81} maxSpeed={255} />
- * ---------------------------------------------------------------------------
- */
-
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   FiWifi,

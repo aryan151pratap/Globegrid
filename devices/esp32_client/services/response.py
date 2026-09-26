@@ -2,7 +2,8 @@ import uasyncio as asyncio
 from services.device_id import get_device_info
 from services.file_manager import Manager
 from services.runner_manager import runner_manager
-
+from services.scanWifi import scan_wifi, get_wifi_status
+from services.offline import _save
 manager = Manager()
 
 BOOT_COMMANDS = ("boot", "run", "stop", "restart", "list")
@@ -47,3 +48,52 @@ async def handleResponse(client, terminal, response):
 			"request_type": request_type,
 			"data": device_info
 		})
+
+	elif message_type == "wifi":
+		operation = response.get("operation")
+		if operation == "scan":
+			networks = scan_wifi()
+			await client.send_json({
+				"type": message_type,
+				"request_id": request_id,
+				"request_type": request_type,
+				"networks": networks
+			})
+		elif operation == "status":
+			data = get_wifi_status()
+			await client.send_json({
+				"type": message_type,
+				"operation": operation,
+				"request_id": request_id,
+				"request_type": request_type,
+				"status": data
+			})
+		elif operation == "save":
+			data = response.get("data")
+			print(data)
+			ssid = data.get("ssid") if data else None
+			pw = data.get("pass") if data else None
+
+			if not ssid:
+				await client.send_json({
+					"type": message_type,
+					"operation": operation,
+					"request_id": request_id,
+					"request_type": request_type,
+					"message": "error: missing ssid"
+				})
+			else:
+				try:
+					_save(ssid, pw)
+					msg = "saved"
+				except Exception as e:
+					print("save failed:", e)
+					msg = "error: " + str(e)
+
+				await client.send_json({
+					"type": message_type,
+					"operation": operation,
+					"request_id": request_id,
+					"request_type": request_type,
+					"message": msg
+				})

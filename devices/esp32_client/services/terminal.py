@@ -6,6 +6,7 @@ import _thread
 import uasyncio as asyncio
 import machine
 from config import USER_ROOT
+from services.scanWifi import scan_wifi, format_networks
 from services.path_utils import safe_path
 
 class StreamStopped(Exception):
@@ -167,6 +168,29 @@ class Terminal:
                     success=True,
                     status="completed",
                     stream=False
+                )
+            )
+            return
+
+        elif command.strip() == "scan_wifi":
+            try:
+                networks = scan_wifi()
+            except Exception as e:
+                await self._safe_send(send_func,
+                    self._create_response(
+                        "[Error] WiFi scan failed: {}\n".format(e),
+                        success=False,
+                        status="error"
+                    )
+                )
+                return
+            lines = format_networks(networks)
+            await self._safe_send(send_func,
+                self._create_response(
+                    lines,
+                    success=True,
+                    status="completed",
+                    stream=False,
                 )
             )
             return

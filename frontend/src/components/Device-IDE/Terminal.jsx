@@ -137,7 +137,7 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 									? "text-red-400"
 									: line.type == 'terminal_input'
 										? "text-zinc-300"
-										: line?.color ? `w-fit text-${line.color}-500 bg-${line.color}-500/20 p-1 mb-1 border-l border-r border-zinc-700` : "text-zinc-400"}
+										: line?.color ? `w-fit text-${line.color}-500/80 text-[11px]` : "text-zinc-400"}
 							`}
 						>
 							{line.type == "terminal_input" && 
@@ -236,7 +236,8 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 	}
 	return(
 		<div className="w-full h-full flex flex-col border border-zinc-800 rounded-md overflow-hidden">
-			<div className="w-full h-fit border-b border-zinc-800/60 p-1 text-xs font-inter flex flex-row gap-1 text-white overflow-auto dark-scrollbar">
+			{(activeFile || message) &&
+			<div className="w-full h-fit p-1 border-b border-zinc-800/60 text-xs font-inter flex flex-row gap-1 text-white overflow-auto dark-scrollbar">
 				{activeFile?.path &&
 				<div className="p-1 bg-zinc-500/20 px-2 text-zinc-400 flex items-center hover:text-zinc-200">
 					<span>{activeFile?.path}</span>
@@ -248,6 +249,7 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 				</div>
 				}
 			</div>
+			}
 			{output?.length > 0 ? (
 				<div ref={outputRef} onScroll={handleScroll} className="h-full overflow-auto dark-scrollbar p-2 pb-8 flex flex-col gap-1">
 					{output.map((item, index) => (
@@ -266,6 +268,8 @@ const RawOutput = function({output, setOutput, activeFile, currentDevice}){
 												</span>
 												<span className="text-zinc-300">
 													{typeof value === "object"
+														? String(value)
+														: typeof value === 'object'
 														? JSON.stringify(value)
 														: String(value)}
 												</span>

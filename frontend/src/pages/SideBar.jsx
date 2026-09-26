@@ -33,11 +33,6 @@ const SideBar = ({ user }) => {
                     icon: <CiCircleList />
                 },
                 {
-                    name: "Commands",
-                    path: "/commands",
-                    icon: <CiDesktop />
-                },
-                {
                     name: "Logs",
                     path: "/logs",
                     icon: <CiViewList />

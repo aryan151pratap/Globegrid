@@ -31,7 +31,6 @@ async def device_delete(device_id: str):
         "message": f"{device_id} device not found"
     }
 
-
 @router.get("/devices/added")
 async def get_added_device(request: Request):
     user = get_current_user(request)
