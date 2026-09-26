@@ -101,7 +101,7 @@ const CodeExplorer = function({files, activeFile, onFileClick, activeProject, se
 			}
 			notify({type: "status", message: res.message});
 			const project = array_of_files(res.project);
-			setProjectList((e) => ([...e, project]));
+			setProjectList((e) => ([project, ...e]));
 			handleSelectFiles(project);
 		} catch (err) {
 			notify({type: "error", message: err});

@@ -54,7 +54,7 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 							<span className="capitalize text-[#CEF144]" title="Select Project">select project</span>
 						</div>
 						
-						<div className="h-full bg-zinc-900/20 overflow-auto dark-scrollbar">
+						<div className="h-[165px] bg-zinc-900/20 overflow-auto dark-scrollbar border-b border-zinc-800/50">
 							{projectList?.map((i, index) => (
 								<div key={i?.id ?? index} className={`${currentProject?.id == i?.id ? "bg-zinc-500/20" : "bg-zinc-600/10 hover:bg-zinc-500/20 hover:text-white hover:border-zinc-500/50"} text-zinc-400 border-b border-t border-t-zinc-900/0 border-zinc-800/50 cursor-pointer`}
 									onClick={() => setCurrentProject(i)}
@@ -86,7 +86,7 @@ export function EditProject({project, setOpenEdit, projectList, setTrigger, devi
 							</span>
 						</div>
 						}
-						<div className="w-fit p-1 flex text-xs text-black">
+						<div className="mt-auto w-fit p-1 flex text-xs text-black">
 							<button className="bg-[#CEF144] px-2 p-1 rounded flex flex-row items-center gap-1"
 								onClick={() => setAddProject(true)}
 							>
