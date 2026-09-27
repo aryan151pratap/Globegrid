@@ -1,6 +1,8 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+load_dotenv()
 from routers.device_ws import router as device_ws_router
 from routers.dashboard_ws import router as dashboard_ws_router
 from routers.httpRoute.auth_http import router as auth_router
@@ -13,12 +15,13 @@ from routers.httpRoute.codeRoute import router as code_router
 
 
 app = FastAPI()
-
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+		FRONTEND_URL,
     ],
     allow_credentials=True,
     allow_methods=["*"],
