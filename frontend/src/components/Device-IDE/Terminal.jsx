@@ -78,7 +78,7 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 						key={item.id}
 						onClick={() => setOption(item.id)}
 						className={`
-							flex items-center gap-5 h-full px-2
+							flex items-center h-full px-2
 							border-r border-zinc-800 cursor-pointer
 							${option === item.id && !side ? "bg-zinc-900/80 text-white" : "text-zinc-400"}
 						`}
@@ -94,22 +94,22 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 					</div>
 				))}
 				<div className="h-full border-r border-zinc-800 flex text-white">
-					<button className={`${!side ? "bg-zinc-500/20 text-zinc-400 hover:text-white" : "bg-purple-500/50 text-white"} flex items-center px-2`}
+					<button className={`${!side ? "text-zinc-400 hover:text-white" : "bg-purple-500/50 text-white"} flex items-center px-2`}
 						onClick={() => setSide(e => !e)}
 					>
 						<VscBook/>
 					</button>
 				</div>
-				<div className="h-full flex flex-row overflow-auto hide-scrollbar">
+				<div className="h-full flex flex-row items-center overflow-auto hide-scrollbar">
 					{connection?.map((i, index) => (
-						<div key={index} className="flex flex-row text-xs text-white border-r border-zinc-800">
-							<div className="uppercase p-1 bg-zinc-500/10 border-r border-zinc-800">
+						<div key={index} className="h-full flex flex-row items-center text-xs text-white border-r border-zinc-800">
+							<div className="capitalize flex items-center px-1.5 h-full bg-zinc-500/10 border-r border-zinc-800">
 								{i?.device_id ? i?.device_id : "Device"}
 							</div>
 							{i?.status ? 
-								<div className="capitalize text-green-500 p-1 bg-green-500/10">connected</div>
+								<div className="h-full capitalize flex items-center text-green-500 p-1 px-1.5 font-inter bg-zinc-500/10">connected</div>
 								:
-								<div className="capitalize text-red-500 p-1 bg-red-500/10">disconnected</div>
+								<div className="h-full capitalize flex items-center text-zinc-500 font-inter p-1 px-1.5 bg-zinc-500/10">disconnected</div>
 							}
 						</div>
 					))}
@@ -123,41 +123,47 @@ export default function TerminalFile({terminal, setTerminal, onClear, onClose, o
 					</button>
 				</div>
 			</div>
-			<div ref={containerRef} className={`p-1 flex flex-row flex-1 min-h-0 w-full`}>
+			<div ref={containerRef} className={`p-1 flex flex-row flex-1 min-h-0 w-full bg-zinc-900/70`}>
 				<div ref={terminalRef} onScroll={handleScroll} 
 					style={{
 						width: side ? `calc(100% - ${outputWidth}px - 4px)` : "100%",
 					}}
-					className={`${option == "terminal" || side ? "flex" : "hidden"} h-full w-full border border-zinc-800 rounded-md flex flex-col overflow-auto hide-scrollbar p-2 text-xs leading-4`}
+					className={`${option == "terminal" || side ? "flex" : "hidden"} h-full w-full border-0 border-zinc-800 rounded-md flex flex-col overflow-auto hide-scrollbar p-2 text-xs leading-4`}
 				>
 					{terminal.map((line, index) => (
 						<div
 							key={index}
-							className={`flex gap-1 break-all ${line.type == "error"
+							className={`flex gap-1 break-all font-semibold ${line.type == "error"
 									? "text-red-400"
 									: line.type == 'terminal_input'
 										? "text-zinc-300"
-										: line?.color ? `w-fit text-${line.color}-500/80 text-[11px]` : "text-zinc-400"}
+										: line?.color ? `w-fit text-${line.color}-500/80 text-[11px]` : "text-zinc-300"}
 							`}
 						>
 							{line.type == "terminal_input" && 
-								<span className="text-blue-500 flex gap-2">
-									<span>{iotConn?.device_id}</span>
-									<span>$</span>
+								<span className="text-blue-500 flex">
+									<span>{iotConn?.device_id}:</span>
+									<span className="text-white">
+										<span className="text-blue-500 font-bold">/</span>
+										<span className="mr-1">$</span>
+									</span> 
 								</span>
 							}
 							<pre className="flex text-wrap break-words break-all">{line?.data}</pre>
 						</div>
 					))}
-					<div className="h-full flex gap-2"> 
-						<span className="text-green-500/50">{iotConn?.device_id}</span>
-						<span className="text-green-400">$</span> 
+					<div className="h-full flex"> 
+						<span className="text-green-500">{iotConn?.device_id}:</span>
+						<span className="text-white">
+							<span className="text-blue-500 font-bold">/</span>
+							<span className="mr-2">$</span>
+						</span> 
 						<textarea ref={inputRef} value={input} 
 							onChange={(event) => setInput(event.target.value)} 
 							onKeyDown={handleKeyDown} 
 							autoFocus 
 							rows={10}
-							className="h-full resize-none flex-1 bg-transparent text-zinc-300 outline-none dark-scrollbar" 
+							className="h-full resize-none flex-1 bg-transparent text-white outline-none dark-scrollbar" 
 							spellCheck={false} 
 						/> 
 					</div>

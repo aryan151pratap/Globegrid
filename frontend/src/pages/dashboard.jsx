@@ -4,10 +4,12 @@ import Agent from "../components/agent/agent.jsx";
 import { handleMouseDown } from "../services/silde.js";
 import { useAuth } from "../AuthContext.jsx";
 import { userData } from "../services/user.js";
+import { OpenAgent } from "../components/agent/openAgent.jsx";
 
 const Dashboard = () => {
     const [agentWidth, setAgentWidth] = useState(300);
     const [userdata, setUserdata] = useState(null);
+    const [openAgent, setOpenAgent] = useState(false);
 
     const containerRef = useRef(null);
     const data = useAuth();
@@ -38,7 +40,7 @@ const Dashboard = () => {
             </div>
 
             <div
-                className="group h-full w-2 p-0.5 flex justify-center cursor-col-resize border-l border-zinc-900 bg-[#0d0d0f]"
+                className={`${openAgent ? "flex" : "hidden"} group h-full w-2 p-0.5 flex justify-center cursor-col-resize border-l border-zinc-900 bg-[#0d0d0f]`}
                 onMouseDown={(e) =>
                     handleMouseDown(
                         e,
@@ -51,13 +53,14 @@ const Dashboard = () => {
             </div>
 
             <div
-                className="h-full flex flex-col rounded-md"
+                className={`${openAgent ? "flex" : "hidden"} h-full flex flex-col rounded-md`}
                 style={{ width: `${agentWidth}px` }}
             >
                 <div className="h-full border-l border-zinc-900 overflow-hidden">
                     <Agent />
                 </div>
             </div>
+            <OpenAgent openAgent={openAgent} setOpenAgent={setOpenAgent}/>
         </div>
     );
 };

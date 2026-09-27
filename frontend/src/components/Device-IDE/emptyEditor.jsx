@@ -2,7 +2,7 @@ import { VscChevronRight, VscGitPullRequestClosed, VscGraphLeft } from "react-ic
 
 const EmptyEditor = function({currentDevice, iotConn}){
 	return(
-		<div className="text-zinc-300 h-full flex items-center justify-center md:p-4 sm:p-4 p-2">
+		<div className="text-zinc-300 bg-zinc-900 h-full flex items-center justify-center md:p-4 sm:p-4 p-2">
 			<div className="text-sm font-inter p-4 p-2">
 				{currentDevice && iotConn?.status == "online" ?
 				<div className="flex flex-col gap-2 capitalize">

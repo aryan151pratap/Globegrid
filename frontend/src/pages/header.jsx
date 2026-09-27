@@ -30,7 +30,7 @@ const Header = function({setShowSideBar, user}){
 					</div>
 
 					<span className="ml-3 font-semibold text-white">
-						ESP Control
+						Globegrid
 					</span>
 				</div>
 				<div className="text-white text-lg font-bold">IoT Dashboard</div>
