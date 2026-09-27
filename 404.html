@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fonts (this part was already fine — browsers can load this directly) -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- CDN's config equivalent of your @theme block -->
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          inter: ['Inter', 'sans-serif'],
+          space: ['Space Grotesk', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+          terminal: ['VT323', 'monospace'],
+          plex: ['IBM Plex Mono', 'monospace'],
+          robotic: ['Orbitron', 'sans-serif'],
+          pixel: ['"Press Start 2P"', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+    <title>Globegrid</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
