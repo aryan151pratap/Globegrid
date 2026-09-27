@@ -11,10 +11,11 @@ import WriteFile from "../components/Device-IDE/writefile.jsx";
 import EmptyEditor from "../components/Device-IDE/emptyEditor.jsx";
 import { handleMouseDownHeight } from "../services/silde.js";
 import { initFileChangeTrigger } from "../services/fileChangeStore.js";
+import { OpenAgent } from "../components/agent/openAgent.jsx";
 
 
 const lang = { js:"javascript",jsx:"javascript",ts:"typescript",tsx:"typescript",py:"python",java:"java",c:"c",cpp:"cpp",cs:"csharp",go:"go",rs:"rust",php:"php",rb:"ruby",html:"html",css:"css",scss:"scss",json:"json",xml:"xml",yaml:"yaml",yml:"yaml",md:"markdown",txt:"plaintext",sql:"sql",sh:"shell",bash:"shell",ps1:"powershell",dockerfile:"dockerfile",ini:"ini" };
-const Editor = function ({user}) {
+const Editor = function ({user, openAgent, setOpenAgent}) {
 
 	// iot device ecxplorer
 	const [files, setFiles] = useState([]);
@@ -268,7 +269,10 @@ const Editor = function ({user}) {
 					/>
 					<WriteFile activeFile={activeFile} currentDevice={currentDevice} setFileTrigger={setFileTrigger} activeProject={activeProject}/>
 				</div>
-				<div className="flex min-h-0 flex-1">
+				<div className="relative flex min-h-0 flex-1">
+					<div className="absolute inset-0 top-auto left-auto z-50 p-1">
+						<OpenAgent openAgent={openAgent} setOpenAgent={setOpenAgent}/>
+					</div>
 					{activeFile ?
 					<div className="min-h-0 flex-1 overflow-hidden hover:border-zinc-500/50">
 						<EditorFile

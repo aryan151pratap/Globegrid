@@ -4,7 +4,6 @@ import Agent from "../components/agent/agent.jsx";
 import { handleMouseDown } from "../services/silde.js";
 import { useAuth } from "../AuthContext.jsx";
 import { userData } from "../services/user.js";
-import { OpenAgent } from "../components/agent/openAgent.jsx";
 
 const Dashboard = () => {
     const [agentWidth, setAgentWidth] = useState(300);
@@ -36,7 +35,7 @@ const Dashboard = () => {
             className="flex flex-row h-full min-h-0 min-w-0 w-full overflow-hidden"
         >
             <div className="h-full z-10 min-h-0 min-w-0 flex-1 overflow-hidden">
-                <Editor user={userdata} />
+                <Editor user={userdata} openAgent={openAgent} setOpenAgent={setOpenAgent}/>
             </div>
 
             <div
@@ -60,7 +59,6 @@ const Dashboard = () => {
                     <Agent />
                 </div>
             </div>
-            <OpenAgent openAgent={openAgent} setOpenAgent={setOpenAgent}/>
         </div>
     );
 };
