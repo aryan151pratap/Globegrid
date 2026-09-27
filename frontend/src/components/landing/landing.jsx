@@ -13,6 +13,7 @@ import {
   LuGithub as Github,
 } from "react-icons/lu";
 import LandingBg from "./landing-bg";
+import { Link } from "react-router-dom";
 
 export default function Landing() {
   return (
@@ -554,10 +555,10 @@ export default function Landing() {
           </div>
 
           <div className="iot-nav-links">
-            <a href="/devices">Devices</a>
-            <a href="/features">Features</a>
-            <a href="/inventory">Inventory</a>
-            <a href="/docs">Docs</a>
+            <Link to="/devices">Devices</Link>
+            <Link to="/features">Features</Link>
+            <Link to="/inventory">Inventory</Link>
+            <Link to="/docs">Docs</Link>
           </div>
 
           <button className="iot-nav-btn">
