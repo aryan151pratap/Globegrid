@@ -16,11 +16,11 @@ def get_database_url():
     # -------------------------
     if DB_ENV == "local":
 
-        host = "localhost"
-        port = "3307"
-        database = "iot_db"
-        username = "root"
-        password = "root"
+        host = os.getenv("DB_HOST", "localhost")
+        port = os.getenv("DB_PORT", "3307")
+        database = os.getenv("DB_NAME", "iot_db")
+        username = os.getenv("DB_USER", "root")
+        password = os.getenv("DB_PASSWORD", "root")
 
         return (
             f"mysql+pymysql://"
@@ -39,9 +39,10 @@ def get_database_url():
         database = os.getenv("DB_NAME")
         username = os.getenv("DB_USER")
         password = os.getenv("DB_PASSWORD")
+        odbc_driver = os.getenv("DB_ODBC_DRIVER", "ODBC Driver 18 for SQL Server")
 
         odbc_string = (
-            "DRIVER={ODBC Driver 17 for SQL Server};"
+            f"DRIVER={{{odbc_driver}}};"
             f"SERVER=tcp:{server},1433;"
             f"DATABASE={database};"
             f"UID={username};"
