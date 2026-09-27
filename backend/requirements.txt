@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+sqlalchemy
+pydantic
+websockets
+python-multipart
+python-jose[cryptography]
+langchain
+langchain-groq
+langchain-google-genai
+groq
+pyodbc
+pymysql
