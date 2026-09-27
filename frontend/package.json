@@ -1,12 +1,12 @@
 {
   "name": "frontend",
-  "homepage": "https://aryan151pratap.github.io",
+  "homepage": "https://aryan151pratap.github.io/Globegrid",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && copy dist\\index.html dist\\404.html",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",

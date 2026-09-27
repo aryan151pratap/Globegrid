@@ -6,7 +6,7 @@ import { AuthProvider } from './AuthContext.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
+    <BrowserRouter basename='/Globegrid'>
       <AuthProvider>
         <App />
       </AuthProvider>
