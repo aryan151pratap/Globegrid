@@ -1,0 +1,9 @@
+WIFI_SSID = "Sahariya 1st Floor-4G"
+WIFI_PASSWORD = "sahariya@7060"
+WS_SERVER = "ws://192.168.7.105:8000/ws/device"
+DEVICE_NAME = "ESP32"
+SEND_INTERVAL = 1
+USER_ROOT = "/esp32_client/user"
+# WIFI_SSID = "Galaxy F12 D5ED"
+# WIFI_PASSWORD = "12344321"
+# WS_SERVER = "ws://10.194.231.50:8000/ws/device"
