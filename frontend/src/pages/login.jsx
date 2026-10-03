@@ -90,7 +90,7 @@ export default function AuthPage() {
 				</p> */}
 			</header>
 
-			<main className="w-[440px] flex flex-col h-full justify-center">
+			<main className="md:w-[440px] sm:w-[400px] w-fit flex flex-col h-full justify-center">
 				<div className="grid grid-cols-2 gap-2 w-full text-sm">
 					<button type="button" className="w-full flex flex-row items-center justify-center gap-2 px-4 mb-2 p-2 border border-zinc-400 text-zinc-200 hover:bg-white hover:text-black hover:border-white">
 						<FcGoogle className="h-5 w-5"/>

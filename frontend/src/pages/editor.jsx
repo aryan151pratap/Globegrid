@@ -15,7 +15,7 @@ import { OpenAgent } from "../components/agent/openAgent.jsx";
 
 
 const lang = { js:"javascript",jsx:"javascript",ts:"typescript",tsx:"typescript",py:"python",java:"java",c:"c",cpp:"cpp",cs:"csharp",go:"go",rs:"rust",php:"php",rb:"ruby",html:"html",css:"css",scss:"scss",json:"json",xml:"xml",yaml:"yaml",yml:"yaml",md:"markdown",txt:"plaintext",sql:"sql",sh:"shell",bash:"shell",ps1:"powershell",dockerfile:"dockerfile",ini:"ini" };
-const Editor = function ({user, openAgent, setOpenAgent}) {
+const Editor = function ({user, openAgent, setOpenAgent, setExpand}) {
 
 	// iot device ecxplorer
 	const [files, setFiles] = useState([]);
@@ -256,6 +256,7 @@ const Editor = function ({user, openAgent, setOpenAgent}) {
 						handleCodeFileSelect={handleCodeFileSelect}
 						activeProject={activeProject}
 						setActiveProject={setActiveProject}
+						setExpand={setExpand}
 					/>
 				}
 			</div>

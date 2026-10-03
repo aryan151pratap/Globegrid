@@ -7,6 +7,7 @@ import { VscChevronDownCompact, VscChevronRight, VscChip } from "react-icons/vsc
 import DeviceManager from "./iotManager/deviceManager";
 import {data} from "../project_ui/data";
 import CodeExplorer from "./ui_code/codeExplorer";
+import { Expand } from "lucide-react";
 
 export default function FileExplorer({
 	files,
@@ -23,7 +24,8 @@ export default function FileExplorer({
 
 	handleCodeFileSelect,
 	activeProject,
-	setActiveProject
+	setActiveProject,
+	setExpand
 }) {
 	const [devices, setDevices] = useState([]);
 	const notify = useNotify();
@@ -122,6 +124,11 @@ export default function FileExplorer({
 					<span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
 						Explorer
 					</span>
+				</div>
+				<div title="Expand" className="text-zinc-500 hover:bg-zinc-500/20 h-full flex items-center p-3 cursor-pointer border-l border-zinc-500/20"
+					onClick={() => setExpand(e => !e)}
+				>
+					<Expand size={14}/>
 				</div>
 			</div>
 

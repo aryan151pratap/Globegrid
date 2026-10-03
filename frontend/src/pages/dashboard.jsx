@@ -9,6 +9,7 @@ const Dashboard = () => {
     const [agentWidth, setAgentWidth] = useState(300);
     const [userdata, setUserdata] = useState(null);
     const [openAgent, setOpenAgent] = useState(false);
+    const [expand, setExpand] = useState(false);
 
     const containerRef = useRef(null);
     const data = useAuth();
@@ -32,10 +33,10 @@ const Dashboard = () => {
     return (
         <div
             ref={containerRef}
-            className="flex flex-row h-full min-h-0 min-w-0 w-full overflow-hidden"
+            className={`${expand && "fixed inset-0 z-[100]"} flex flex-row h-full min-h-0 min-w-0 w-full overflow-hidden`}
         >
-            <div className="h-full z-10 min-h-0 min-w-0 flex-1 overflow-hidden">
-                <Editor user={userdata} openAgent={openAgent} setOpenAgent={setOpenAgent}/>
+            <div className="h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+                <Editor user={userdata} openAgent={openAgent} setOpenAgent={setOpenAgent} setExpand={setExpand}/>
             </div>
 
             <div

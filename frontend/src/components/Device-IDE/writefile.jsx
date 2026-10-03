@@ -87,7 +87,7 @@ const WriteFile = function ({ activeFile, currentDevice, setFileTrigger, activeP
 	}
 
 	return (
-		<div className="bg-zinc-800/50 h-6 border-zinc-800 w-full flex flex-row items-center text-white overflow-hidden p-0.5">
+		<div className="bg-zinc-800/50 backdrop-blur-sm h-6 border-zinc-800 w-full flex flex-row items-center text-white overflow-hidden p-0.5">
 			<div className={`${activeFile ? "opacity-100" : "hidden"} shrink-0 group-hover:opacity-100 transition text-white text-xs p-1 text-zinc-400 px-2 border-r border-zinc-800 overflow-auto`}>
 				<div className="flex flex-row items-center overflow-auto hide-scrollbar">
 					{activeFile?.path?.split("/").slice(1,).map((i, index) => (

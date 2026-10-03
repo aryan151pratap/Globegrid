@@ -24,12 +24,12 @@ export default function ProtectedLayout() {
 
     return (
         <div className="flex h-screen w-full flex-col overflow-hidden bg-[#09090b]">
-            <div className="shrink-0">
+            <div className="shrink-0 z-10">
                 <Header setShowSideBar={setShowSideBar} user={user}/>
             </div>
 
             <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-                <aside className={`${showSideBar ? "md:flex hidden" : "md:hidden flex"} flex h-[94%] md:h-full fixed md:static z-20 backdrop-blur-md md:backdrop-blur-none bg-zinc-900/70 md:bg-zinc-900/0 md:bg-transparent shrink-0 overflow-hidden`}>
+                <aside className={`${showSideBar ? "md:flex hidden" : "md:hidden flex z-[100]"} flex h-[94%] md:h-full fixed md:static backdrop-blur-md md:backdrop-blur-none bg-zinc-900/70 md:bg-zinc-900/0 md:bg-transparent shrink-0 overflow-hidden`}>
                     <SideBar user={user}/>
                 </aside>
                 <main className="min-h-0 min-w-0 flex-1 overflow-hidden">

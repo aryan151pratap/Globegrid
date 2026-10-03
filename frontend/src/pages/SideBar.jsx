@@ -63,7 +63,7 @@ const SideBar = ({ user }) => {
     ];
 	
     return (
-        <div className="h-full flex w-64 shrink-0 flex-col border-r border-zinc-800 bg-[#09090b]/10">
+        <div className="h-full flex w-64 shrink-0 flex-col border-r border-zinc-800/50 bg-[#09090b]/80">
             <nav className="mt-2 h-full flex-1">
                 {menuItems.map((section, index) => (
                     <div
@@ -90,17 +90,17 @@ const SideBar = ({ user }) => {
                                         <Link
                                             key={item.path}
                                             to={item.path}
-                                            className={`flex w-full items-center gap-3 px-2 py-1.5 text-sm transition-colors cursor-pointer
+                                            className={`flex w-full rounded-md items-center gap-3 px-2 py-1.5 text-sm transition-colors cursor-pointer
                                                 ${
                                                     active
-                                                        ? "border-l-4 border-orange-500/80 bg-zinc-800/80 text-white"
+                                                        ? "border-l-2 border-orange-500/80 bg-zinc-800/80 text-white"
                                                         : "text-zinc-300/80 hover:bg-zinc-800/50"
                                                 }`}
                                         >
                                             <span
                                                 className={`text-lg ${
                                                     active
-                                                        ? "text-orange-500"
+                                                        ? "text-orange-400"
                                                         : "text-zinc-400"
                                                 }`}
                                             >
