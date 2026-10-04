@@ -13,19 +13,18 @@ const handleCopy = async (code, notify) => {
 	}
 };
 
-
 const ChatContainer = ({ messages, data }) => {
 	const {ref: chatRef, handleScroll} = useAutoScroll(messages);
 	
 	return (
-		//ref={chatRef}
 		<div ref={chatRef} onScroll={handleScroll} className="h-fit min-h-0 w-full min-w-0 flex-1 overflow-auto hide-scrollbar px-4 py-5">
 			<div className="max-w-3xl mx-auto flex flex-col overflow-auto dark-scrollbar">
 				{messages.length === 0 ? (
 					<div className="flex flex-1 items-center justify-center py-20 text-center">
 						<div>
-							<h2 className="text-lg font-semibold text-zinc-300">
-								How can I help?
+							<h2 className="flex flex-col text-lg font-semibold text-zinc-300">
+								<span>Hi {data?.user?.email.split('@')[0]}</span>
+								<span>How can I help?</span>
 							</h2>
 
 							<p className="mt-2 text-sm text-zinc-500">
@@ -81,7 +80,7 @@ const ChatType = ({ message, data }) => {
 			    </pre>
 				<div className="flex flex-row">
 					<span className={`${isUser ? "ml-auto mt-1 mb-10" : "hidden"} text-zinc-400 hover:text-zinc-300 cursor-pointer`}
-						onClick={() => handleCopy(message?.content ,notify)} 
+						onClick={() => handleCopy(message?.content, notify)} 
 					>
 						<BsCopy/>
 					</span>

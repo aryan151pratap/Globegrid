@@ -33,7 +33,7 @@ const Header = function({setShowSideBar, user}){
 						Globegrid
 					</span>
 				</div>
-				<div className="text-white text-lg font-bold">IoT Dashboard</div>
+				<div className="md:flex sm:flex hidden text-white text-lg font-bold">IoT Dashboard</div>
 				<div className="text-sm flex items-center gap-2">
 					<Link to={"/profile"} className="text-white bg-zinc-500/40 text-zinc-300 hover:bg-purple-500/80 hover:text-white px-2 p-1">Profile</Link>
 					<button className="text-white bg-zinc-500/40 text-zinc-300 px-2 p-1 hover:bg-white hover:text-black"

@@ -68,11 +68,11 @@ const Show = () => {
     }
 
     return (
-        <div className="h-screen w-full flex flex-col bg-black">
+        <div className="h-screen w-full flex flex-col bg-black overflow-auto">
             {loading &&
                 <PageLoading/>
             }
-            <header className="h-10 shrink-0 flex items-center gap-3 px-3 bg-zinc-900/95 border-b border-zinc-800">
+            <header className="h-10 shrink-0 flex items-center gap-3 px-3 bg-zinc-900/95 border-b border-zinc-800 overflow-auto hide-scrollbar">
                 <button
                     onClick={() => setTrigger((e) => e+1)}
                     className="flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-800/80 px-2.5 py-1 text-xs text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
@@ -83,7 +83,7 @@ const Show = () => {
                 </button>
 
                 <div className="h-5 w-px bg-zinc-800" />
-                <div className="min-w-0 flex items-center gap-2">
+                <div className="shrink-0 min-w-0 flex items-center gap-2">
                     <span className="text-xs text-zinc-500">
                         Project
                     </span>

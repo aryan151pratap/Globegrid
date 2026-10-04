@@ -38,16 +38,16 @@ const Inventory = () => {
                     <h1 className="text-2xl font-semibold tracking-tight">Inventory</h1>
                     <p className="text-sm text-gray-500 mt-1">Your saved projects</p>
                 </div>
-                <button className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 transition-colors">
+                <Link to={"/dashboard"} className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 transition-colors">
                     + New Project
-                </button>
+                </Link>
             </div>
 
             <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide">
                 Projects {data?.length ? `(${data.length})` : ""}
             </h2>
 
-            <div className="flex-1 overflow-auto dark-scrollbar -mx-1 px-1">
+            <div className="flex-1 overflow-auto hide-scrollbar -mx-1 px-1">
                 <ProjectList data={data} loading={loading}/>
             </div>
         </div>

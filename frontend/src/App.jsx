@@ -10,11 +10,12 @@ import Landing from './components/landing/landing.jsx';
 import Agent from './components/agent/agent.jsx';
 import CarController from './pages/carController.jsx';
 import FailedRoute from './failedroute.jsx';
-import AuthPage from './pages/login.jsx';
 import Profile from './components/profile/profile.jsx';
 import Inventory from './components/project/invetory.jsx';
 import Show from './components/project_ui/show.jsx';
 import Setting from './setting/setting.jsx';
+import AuthPage from './components/profile/login.jsx';
+import Reset from './components/profile/reset.jsx';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/password-reset" element={<Reset/>} />
           <Route element={<ProtectedRoute/>}>
             <Route element={<ProtectedLayout />}>
               <Route path="/dashboard" element={<Dashboard />}/>

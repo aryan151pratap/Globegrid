@@ -27,7 +27,7 @@ export function NotifyProvider({ children }) {
 	return (
 		<NotifyContext.Provider value={notify}>
 			{children}
-			<div className="pointer-events-none fixed top-2 left-1/2 z-[100] flex -translate-x-1/2 flex-col items-center gap-2">
+			<div className="pointer-events-none fixed bottom-2 right-0 z-[100] px-2 flex flex-col gap-2">
 				{toast && <Toast key={toast.id} {...toast} onDismiss={() => dismiss(toast.id)} />}
 			</div>
 		</NotifyContext.Provider>

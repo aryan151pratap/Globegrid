@@ -1,10 +1,5 @@
-import asyncio
-
-
-
-
 import uuid
-
+import asyncio
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from services.manager.device_manager import manager

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel, EmailStr
 
-from services.auth_service import login_user, signup_user, verify_access_token
+from services.auth_service import login_user, signup_user, verify_access_token, hash_password
 from services.user_register import user_register
 from services.auth_service import get_current_user
 from services.user_register import user_register
@@ -125,6 +125,21 @@ async def get_user_details(request: Request):
 		"user": user,
 		"status": True
 	}
+
+@router.post("/password-reset")
+async def reset(request: LoginRequest):
+	user = user_register.get_user(request.email)
+	if not user.get("email"):
+		raise HTTPException(status_code=400, detail="user email with not found")
+	if not user:
+		raise HTTPException(status_code=400, detail="No account found for this email")
+
+	user_register.update_specific_columns(
+		user["id"],
+		password_hash=hash_password(request.password)
+	)
+
+	return {"success": True, "message": "Password reset successfully"}
 
 @router.post("/logout")
 async def logout(response: Response):
