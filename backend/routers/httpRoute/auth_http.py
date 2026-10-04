@@ -65,6 +65,13 @@ async def signup(request: SignupRequest):
 			status_code=400,
 			detail=str(e)
 		)
+	except Exception as e:
+		print("Signup Unexpected Error:", repr(e))
+
+		raise HTTPException(
+			status_code=500,
+			detail=str(e)
+		)
 
 @router.get("/me")
 async def meToken(request: Request):

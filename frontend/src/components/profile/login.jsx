@@ -68,7 +68,7 @@ export default function AuthPage() {
 
 			notify({
 				type: "error",
-				message: err.message
+				message: err?.response?.data?.detail
 			});
 		} finally {
 			setLoading(false);
@@ -220,7 +220,7 @@ export default function AuthPage() {
 					)}
 
 					{error && (
-						<p className="p-2 border border-red-400/90 hover:border-red-500">{error}</p>
+						<p className="text-xs p-2 border border-red-500/40 bg-zinc-500/10">{error}</p>
 					)}
 
 					<button

@@ -102,7 +102,6 @@ async def signup_user(name: str, email: str, password: str):
 		password_hash=password_hash
 	)
 
-	print("Signup:", name, email)
 
 	return {
 		"message": "Signup successful",
