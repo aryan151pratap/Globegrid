@@ -71,130 +71,199 @@ export default function Header({ deviceName = "ESP32", connected = false }) {
     );
 }""",
             "/sample.jsx": """
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import { useEsp } from "./useEsp";
 
+const PATHS = {
+    memory: "M6 6h12v12H6zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4",
+    status: "M3 12h4l3-8 4 16 3-8h4",
+    on: "M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
+    off: "M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z",
+};
+
+const TONES = {
+    blue: ["bg-[#4fb2ff]/10 text-[#4fb2ff] ring-[#4fb2ff]/20", "hover:border-[#4fb2ff]/50 hover:shadow-[0_8px_30px_-8px_rgba(79,178,255,0.35)]"],
+    amber: ["bg-[#ffb84f]/10 text-[#ffb84f] ring-[#ffb84f]/20", "hover:border-[#ffb84f]/50 hover:shadow-[0_8px_30px_-8px_rgba(255,184,79,0.35)]"],
+    slate: ["bg-[#8b9ab0]/10 text-[#9fb0c6] ring-[#8b9ab0]/20", "hover:border-[#8b9ab0]/50 hover:shadow-[0_8px_30px_-8px_rgba(139,154,176,0.3)]"],
+};
+
 const COMMANDS = [
-    { label: "Ping", payload: { cmd: "ping" } },
-    { label: "Get status", payload: { cmd: "status" } },
-    { label: "LED ON", payload: { cmd: "led", value: 1 } },
-    { label: "LED OFF", payload: { cmd: "led", value: 0 } },
+    { label: "Memory", hint: "Heap report", icon: "memory", tone: "blue", payload: { cmd: "memory_report" } },
+    { label: "Get status", hint: "Device info", icon: "status", tone: "blue", payload: { cmd: "status" } },
+    { label: "LED ON", hint: "Turn on", icon: "on", tone: "amber", payload: { cmd: "led", value: 1 } },
+    { label: "LED OFF", hint: "Turn off", icon: "off", tone: "slate", payload: { cmd: "led", value: 0 } },
 ];
 
-function displayValue(value) {
-    if (value === null || value === undefined) return "null";
-    if (typeof value === "object") return JSON.stringify(value);
-    return String(value);
+const GRID = {
+    backgroundImage: "linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)",
+    backgroundSize: "44px 44px",
+    maskImage: "radial-gradient(ellipse at 50% 0%,black 30%,transparent 75%)",
+    WebkitMaskImage: "radial-gradient(ellipse at 50% 0%,black 30%,transparent 75%)",
+};
+
+const Icon = ({ name }) => (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d={PATHS[name]} />
+    </svg>
+);
+
+const displayValue = (v) => (v === null || v === undefined ? "null" : typeof v === "object" ? JSON.stringify(v) : String(v));
+
+const valueColor = (v) =>
+    typeof v === "number" ? "text-[#4fb2ff]"
+    : typeof v === "boolean" ? (v ? "text-[#4ade80]" : "text-[#f87171]")
+    : v == null ? "text-[#4a5568]"
+    : "text-[#e6edf3]";
+
+function Sparkline({ points }) {
+    if (points.length < 2) return null;
+    const [w, h] = [112, 40];
+    const min = Math.min(...points);
+    const span = Math.max(...points) - min || 1;
+    const xy = points.map((p, i) => [(i * w) / (points.length - 1), h - 4 - ((p - min) / span) * (h - 8)]);
+    const line = xy.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+    const [lx, ly] = xy[xy.length - 1];
+    return (
+        <svg width={w} height={h} className="overflow-visible">
+            <defs>
+                <linearGradient id="spark" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#4fb2ff" stopOpacity="0.35" /><stop offset="100%" stopColor="#4fb2ff" stopOpacity="0" /></linearGradient>
+            </defs>
+            <polygon points={`0,${h} ${line} ${w},${h}`} fill="url(#spark)" />
+            <polyline points={line} fill="none" stroke="#4fb2ff" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+            <circle cx={lx} cy={ly} r="2.5" fill="#4fb2ff" />
+        </svg>
+    );
 }
+
+const Card = ({ title, right, children }) => (
+    <section className="overflow-hidden rounded-2xl border border-white/[0.06] bg-[#10151c]/80 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+        {title && (
+            <div className="flex items-center justify-between border-b border-white/[0.05] px-5 py-3.5">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7d8a9c]">{title}</h2>
+                {right}
+            </div>
+        )}
+        {children}
+    </section>
+);
 
 export default function Sample() {
     const { data, history, send, latency, running } = useEsp();
     const [lastSent, setLastSent] = useState(null);
-
+    const [latencies, setLatencies] = useState([]);
     const fields = data ? Object.entries(data) : [];
+    const hasLatency = latency !== null && latency !== undefined;
+    useEffect(() => { if (hasLatency) setLatencies((p) => [...p.slice(-29), latency]); }, [latency, hasLatency]);
 
-    const handleSend = (payload) => {
-        send(payload);
-        setLastSent({ label: payload.cmd, time: new Date().toLocaleTimeString() });
+    const handleSend = (cmd) => {
+        send(cmd.payload);
+        setLastSent({ label: cmd.label, time: new Date().toLocaleTimeString(), id: Date.now() });
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#0a0d12] to-[#0b0f14] font-sans text-[#e6edf3]">
-            <Header deviceName="ESP32" connected={running} />
-
-            <main className="mx-auto max-w-2xl px-6 py-10">
-                <div className="mb-6 flex items-center justify-between rounded-xl border border-[#1f2733] bg-[#11161d]/80 px-5 py-4 backdrop-blur">
-                    <div className="flex items-center gap-3">
-                        <span className="relative flex h-2.5 w-2.5">
-                            {running && (
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4fb2ff] opacity-60" />
+        <div className="relative min-h-screen overflow-hidden bg-[#080b10] font-sans text-[#e6edf3] antialiased">
+            <div className="pointer-events-none absolute inset-0">
+                <div className="absolute -top-40 left-1/2 h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-[#4fb2ff]/[0.09] blur-[120px]" />
+                <div className="absolute bottom-0 right-0 h-[320px] w-[420px] rounded-full bg-[#7c5cff]/[0.06] blur-[120px]" />
+                <div className="absolute inset-0 opacity-[0.35]" style={GRID} />
+            </div>
+            <div className="relative">
+                <Header deviceName="ESP32" connected={running} />
+                <main className="mx-auto max-w-2xl space-y-5 px-6 py-10">
+                    <Card>
+                        <div className="flex items-center justify-between gap-4 px-5 py-4">
+                            <div className="flex items-center gap-4">
+                                <div className={`relative flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${running ? "bg-[#4fb2ff]/10 text-[#4fb2ff] ring-[#4fb2ff]/25" : "bg-white/[0.03] text-[#4a5568] ring-white/[0.06]"}`}>
+                                    {running && <span className="absolute inset-0 animate-ping rounded-xl bg-[#4fb2ff]/10" />}
+                                    <span className="relative"><Icon name="memory" /></span>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-[#f1f5f9]">{running ? "Code running on ESP32" : "Not receiving data"}</p>
+                                    <p className="mt-0.5 text-xs text-[#7d8a9c]">
+                                        <span className="font-mono text-[#9fb0c6]">{history.length}</span> messages
+                                        <span className="mx-1.5 text-[#2a3644]">•</span>
+                                        <span className="font-mono text-[#9fb0c6]">{fields.length}</span> fields
+                                    </p>
+                                </div>
+                            </div>
+                            {hasLatency && (
+                                <div className="flex items-center gap-4">
+                                    <Sparkline points={latencies} />
+                                    <div className="text-right">
+                                        <p className="font-mono text-2xl font-semibold leading-none text-[#4fb2ff]">
+                                            {Math.round(latency)}<span className="ml-1 text-xs font-normal text-[#7d8a9c]">ms</span>
+                                        </p>
+                                        <p className="mt-1.5 text-[10px] uppercase tracking-[0.14em] text-[#4a5568]">latency</p>
+                                    </div>
+                                </div>
                             )}
-                            <span
-                                className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
-                                    running ? "bg-[#4fb2ff]" : "bg-[#4a5568]"
-                                }`}
-                            />
-                        </span>
-                        <div>
-                            <p className="text-sm font-medium text-[#e6edf3]">
-                                {running ? "Code running on ESP32" : "Not receiving data"}
-                            </p>
-                            <p className="text-xs text-[#7d8a9c]">
-                                {history.length} messages · {fields.length} fields
-                            </p>
                         </div>
-                    </div>
-                    {latency !== null && (
-                        <div className="text-right">
-                            <p className="font-mono text-lg font-semibold text-[#4fb2ff]">
-                                {Math.round(latency)}
-                                <span className="ml-1 text-xs font-normal text-[#7d8a9c]">ms</span>
-                            </p>
-                            <p className="text-[10px] uppercase tracking-wide text-[#4a5568]">latency</p>
-                        </div>
-                    )}
-                </div>
-
-                <section className="overflow-hidden rounded-xl border border-[#1f2733] bg-[#11161d]">
-                    <div className="flex items-center justify-between border-b border-[#1f2733] bg-[#0d1117] px-5 py-3.5">
-                        <h2 className="text-sm font-semibold tracking-wide text-[#e6edf3]">Latest reading</h2>
-                        <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
-                                running
-                                    ? "bg-[#4fb2ff]/10 text-[#4fb2ff]"
-                                    : "bg-[#4a5568]/10 text-[#4a5568]"
-                            }`}
-                        >
-                            {running ? "live" : "idle"}
-                        </span>
-                    </div>
-
-                    {!data ? (
-                        <div className="flex flex-col items-center justify-center gap-2 px-5 py-14">
-                            <p className="font-mono text-sm text-[#4a5568]">
-                                waiting for data<span className="animate-pulse">_</span>
-                            </p>
-                        </div>
-                    ) : (
-                        <table className="w-full text-sm">
-                            <tbody>
-                                {fields.map(([key, value]) => (
-                                    <tr
-                                        key={key}
-                                        className="border-b border-[#1f2733] transition hover:bg-[#161d27] last:border-0"
+                    </Card>
+                    <Card
+                        title="Latest reading"
+                        right={
+                            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ring-1 ${running ? "bg-[#4ade80]/10 text-[#4ade80] ring-[#4ade80]/20" : "bg-white/[0.03] text-[#4a5568] ring-white/[0.06]"}`}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${running ? "animate-pulse bg-[#4ade80]" : "bg-[#4a5568]"}`} />
+                                {running ? "live" : "idle"}
+                            </span>
+                        }
+                    >
+                        {!data ? (
+                            <div className="flex flex-col items-center gap-3 px-5 py-16">
+                                <div className="flex gap-1.5">{[0, 150, 300].map((d) => <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#4fb2ff]/60" style={{ animationDelay: `${d}ms` }} />)}</div>
+                                <p className="font-mono text-sm text-[#4a5568]">waiting for data<span className="animate-pulse">_</span></p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-px bg-white/[0.04] sm:grid-cols-2">
+                                {fields.map(([key, value]) => {
+                                    const isObj = typeof value === "object" && value !== null;
+                                    return (
+                                        <div key={key} className={`bg-[#10151c] px-5 py-4 transition-colors hover:bg-[#151c26] ${isObj ? "sm:col-span-2" : ""}`}>
+                                            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#7d8a9c]">{key}</p>
+                                            <p className={`mt-1.5 break-all font-mono ${isObj ? "text-xs leading-relaxed" : "text-lg font-medium"} ${valueColor(value)}`}>
+                                                {displayValue(value)}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </Card>
+                    <Card title="Send to device">
+                        <div className="px-5 py-5">
+                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                {COMMANDS.map((cmd) => (
+                                    <button
+                                        key={cmd.label}
+                                        onClick={() => handleSend(cmd)}
+                                        className={`group flex flex-col items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3.5 text-left transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${TONES[cmd.tone][1]}`}
                                     >
-                                        <td className="w-1/3 px-5 py-3 text-[#7d8a9c]">{key}</td>
-                                        <td className="px-5 py-3 font-mono text-[#e6edf3]">
-                                            {displayValue(value)}
-                                        </td>
-                                    </tr>
+                                        <span className={`flex h-8 w-8 items-center justify-center rounded-lg ring-1 transition-transform group-hover:scale-110 ${TONES[cmd.tone][0]}`}>
+                                            <Icon name={cmd.icon} />
+                                        </span>
+                                        <span>
+                                            <span className="block text-[13px] font-semibold text-[#e6edf3]">{cmd.label}</span>
+                                            <span className="mt-0.5 block text-[11px] text-[#7d8a9c]">{cmd.hint}</span>
+                                        </span>
+                                    </button>
                                 ))}
-                            </tbody>
-                        </table>
-                    )}
-                </section>
-
-                <section className="mt-6 rounded-xl border border-[#1f2733] bg-[#11161d] px-5 py-5">
-                    <h2 className="mb-4 text-sm font-semibold tracking-wide text-[#e6edf3]">Send to device</h2>
-                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                        {COMMANDS.map((cmd) => (
-                            <button
-                                key={cmd.label}
-                                onClick={() => handleSend(cmd.payload)}
-                                className="rounded-lg border border-[#2a3644] bg-[#161d27] px-3 py-2.5 text-xs font-medium text-[#e6edf3] transition hover:-translate-y-0.5 hover:border-[#4fb2ff] hover:text-[#4fb2ff] hover:shadow-[0_0_0_1px_#4fb2ff33]"
-                            >
-                                {cmd.label}
-                            </button>
-                        ))}
-                    </div>
-                    {lastSent && (
-                        <p className="mt-4 font-mono text-xs text-[#4a5568]">
-                            sent <span className="text-[#7d8a9c]">"{lastSent.label}"</span> at {lastSent.time}
-                        </p>
-                    )}
-                </section>
-            </main>
+                            </div>
+                            <div className="mt-4 flex h-9 items-center rounded-lg border border-white/[0.05] bg-black/20 px-3 font-mono text-xs">
+                                {lastSent ? (
+                                    <p key={lastSent.id} className="flex items-center gap-2 text-[#7d8a9c]">
+                                        <span className="text-[#4ade80]">›</span>
+                                        sent <span className="text-[#e6edf3]">"{lastSent.label}"</span>
+                                        <span className="text-[#4a5568]">at {lastSent.time}</span>
+                                    </p>
+                                ) : (
+                                    <p className="text-[#4a5568]"><span className="text-[#2a3644]">›</span> no commands sent yet</p>
+                                )}
+                            </div>
+                        </div>
+                    </Card>
+                </main>
+            </div>
         </div>
     );
 }""",
